@@ -1,0 +1,20 @@
+#! /bin/bash
+#
+# -- example start file
+#
+abort () { printf >&2 "%s\n" "$@"; exit 1; }
+
+# -- send a love note to the log when we start up
+#
+printf >&2 "%s\n" "Starting service ${NAME:-@PACKAGE@} (@PACKAGE@-@VERSION@)."
+
+# -- We want to search our own package for any executables first!
+#
+export PATH="@PACKAGE_ROOT@:@PACKAGE_ROOT@/bin:$PATH"
+
+
+exec -a "${ARGV0:-example}" \
+    "@PACKAGE_ROOT@/example-utility"
+
+
+# -- end of file

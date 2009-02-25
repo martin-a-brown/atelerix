@@ -1,0 +1,92 @@
+Question and answer
+===================
+
+Q: Where do I set the name of the software (package)?
+Q: Where do I set the version of the software (package)?
+A: In the specfile.in, there are two entries at the very top of the file.
+   These are used for the name of the package and the version.  The Makefile
+   uses rpm --specfile to fetch the name and version of the package for the
+   build process.  The name and version are stored only in these files.  (Note
+   though, that the $(NAME)-$(VERSION) are used as the tag for the version
+   control system. See below for more details.)
+
+
+Q: Under what license is atelerix released?
+A: The BSDL.  
+
+
+Q: Why does the specfile.in say "License: empty", then?
+A: The example 'specfile.in' contains the rather unusual value 'empty' for
+   the License field.  This is merely to emphasize that any software using the
+   atelerix Makefile (and tools) should specify its own license in this field.
+
+
+Q: How do I get some more help on building a package with this?
+A: Type 'make help' at the command line containing the main Makefile.
+A: There's a PACKAGING-HOWTO.rst (restructured text).  Run that through
+   'rst2html.py' to look at some HTML, or just look at the RST itself.
+   Alternatively, look through the distributed Makefile.build for the line
+   'RST2HTML := PACKAGING-HOWTO.html' and uncomment.
+
+
+Q: How do I add a simple file?  For example, suppose I want to add a script
+   that should end up in /usr/bin/frobnitz (without any changes).
+A: This involves several steps (continuing from above frobnitz example
+   workflow).
+
+     1. add the file to the directory (and your VCS)
+     2. add the file to the %files specfile listing
+          %attr(755, root, root) @BINDIR@/frobnitz
+     3. add a section to the 'install' target of Makefile.build
+          mkdir -p $(DESTDIR)$(BINDIR)
+          install -m 0755 frobnitz $(DESTDIR)$(BINDIR)
+     4. run "make test-rpm"
+
+   You should get a package in the ./dist/ directory.  Check the built package
+   to see if the file is in the correct place:
+
+     5. rpm -qlp dist/frobnitz-$VERSION-1.noarch.rpm
+
+   Look for the output showing the package with /usr/bin/frobnitz.
+
+
+Q: What are the macros available for substitution?
+A: Look at the supplied Makefile.build to see the most common ones.  These are
+   listed at the bottom of the file along with some sample contents.
+A: Look at the supplied Makefile's $(SUBDATA) target.  This target create a
+   file which contains all of the substitutions that will be used in any of
+   your .in files.  The macros should look familiar to you if you have used
+   autotools.  Each macro starts with an @ and ends with an @.
+   If you have not used autotools, just remember one distinction.  The
+   variable name is completely the same.  The syntax, though, differs
+   slightly:
+
+     in Makefile.build and Makefile:    $(PACKAGE_ROOT)
+     in any other file:                  @PACKAGE_ROOT@
+
+
+Q: Does this work for python?  How about C?  Perl?  Shell?
+A: This packaging and VCS integration can work with just about any code you
+   want to package.  So, yes.
+
+
+Q: Shouldn't I be using autotools?  Or python Distutils?  Or perl's CPAN?
+A: Depends on your needs.  This is intended to be a very lightweight
+   framework for solving the common need to deploy a bunch of scripts as a
+   package.  Systems administrators like packages.  Developers like
+   subversion.  Many find autotools excruciating.  Some don't like Distutils
+   or CPAN.
+
+
+Q: What if I don't like having my configuration files in a subdirectory called
+   /etc/atelerix/<package>?
+A: OK, so you run the company "sylvester" and you want all of your
+   configuration files to end up in /etc/sylvester/<package>.  Go into the
+   Makefile, and find the variable called ENCLAVE.  Change it and remake your
+   package.
+
+
+Q: Why is it called atelerix?
+A: Because it's hedgehog-like, wrapping up into a little ball to protect
+   itself against those evil systems administrators.
+

@@ -1,0 +1,48 @@
+Name:           atelerix
+Version:        0.2.14
+Release:        1@RELEASE_DIST@
+Summary:        A simple atelerix example package.
+
+Group:          System Environment/Base
+License:        empty
+URL:            http://www.renesys.com/
+Source0:        %{name}-%{version}.tar.gz
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%__id -u -n)
+BuildArch:	noarch
+# BuildRequires:  postgresql-devel
+# Requires:       SQLAlchemy
+
+%description
+An example of an atelerix-style package for easy building directly from a
+source code management system.
+
+%prep
+%setup -q
+
+%build
+make build
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(0644,root,root,0755)
+%doc README RELEASE-NOTES README.FAQ PACKAGING-HOWTO.rst
+
+%dir                   @PACKAGE_ETC@
+%config(noreplace)     @PACKAGE_ETC@/main.conf
+%dir                   @PACKAGE_ROOT@
+%attr(755, root, root) @PACKAGE_ROOT@/atelerix-script
+
+# %dir                   @PACKAGE_SHARE@
+# %dir                   @PACKAGE_CACHE@
+
+
+%changelog
+* Sat Feb 14 2009 Martin A. Brown <mabrown@renesys.com>
+  [0.0.9-1]
+- initial work

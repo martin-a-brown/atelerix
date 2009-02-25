@@ -1,0 +1,9 @@
+SERVICE=@PACKAGE@
+USER=gradus
+
+# -- if you wish to use multilog, you should uncomment this line
+#
+# LOGGER=multilog
+#
+# -- service-specific options; none need be specified, defaults are shown
+# 

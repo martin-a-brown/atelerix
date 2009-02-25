@@ -1,0 +1,99 @@
+# -- This is used only for building the software itself.
+#    It only requires two externally visible targets, "build"
+#    and "install", which will be called from the "Makefile"
+#    by the RPM build process.
+#
+# -- For a listing of paths (and their usual values), see the bottom
+#    of this template (and feel free to remove the boilerplate).
+#
+# -- The following path variables are available at both build
+#    and installation time.  The resulting package will
+#    need to know these things at installation time, too.
+#    (They will be in our environment, but may as well not
+#    rely on that.)
+#
+
+DESTDIR := /
+
+default: build
+
+# -- Add any files which need to be passed through a transformation
+#    (for build-time variable intepolation) in the BUILT_FILES list.
+#
+BUILT_FILES := atelerix-script
+BUILT_FILES += main.conf
+
+CLEAN_FILES :=
+MANPAGES    := 
+POD2MANS    :=
+RST2HTML    :=
+
+# RST2HTML    := PACKAGING-HOWTO.html
+
+# -- Are you planning on making this a service?  Add the following line
+#    and describe the environment of your process in renserv.cfg.in.
+#    Put your long-running daemon in start.in.
+#
+BUILT_FILES += start renserv.cfg
+
+$(BUILT_FILES): %: %.in $(SUBDATA)
+	python $(SUBSCRIPT) $(SUBDATA) < $< > $@
+
+$(MANPAGES): %.1: %
+	pod2man --section 1 > $@ $<
+
+$(POD2MANS): %.1: %.pod
+	pod2man --section 1 > $@ $<
+
+$(RST2HTML): %.html: %.rst
+	rst2html.py > $@ $<
+
+.PHONY: build-clean
+build-clean:
+	rm -f $(SUBDATA) $(BUILT_FILES) $(MANPAGES) $(POD2MANS) $(RST2HTML)
+
+.PHONY: $(SUBDATA)-hook
+$(SUBDATA)-hook: $(SUBDATA)
+
+.PHONY: build 
+build: $(SUBDATA)-hook $(BUILT_FILES) $(MANPAGES) $(POD2MANS) $(RST2HTML)
+
+.PHONY: install
+install: build
+	# -- put things into /usr/lib/$PACKAGE
+	#
+	mkdir -p                         $(DESTDIR)$(PACKAGE_ROOT)
+	install -m 0755 atelerix-script  $(DESTDIR)$(PACKAGE_ROOT)
+	#
+	# -- install config files into /etc/atelerix/$PACKAGE
+	#
+	mkdir -p                  $(DESTDIR)$(PACKAGE_ETC)
+	install -m 0644 main.conf $(DESTDIR)$(PACKAGE_ETC)
+	#
+	# -- install the example service configuration file for renserv
+	#
+	# mkdir -p                  $(DESTDIR)$(PACKAGE_SHARE)
+	# install -m 0644 something $(DESTDIR)$(PACKAGE_SHARE)
+	#
+
+# -- The following Makefile variables are available to you here for
+#    controlling the destination directory of your installation.  The
+#    conventional defaults are shown!
+#
+#    PACKAGE        := frobnitz
+#    VERSION        := 0.1.3
+#    PACKAGE_ROOT   := /usr/lib/frobnitz
+#    PACKAGE_ETC    := /etc/atelerix/frobnitz
+#    PACKAGE_SHARE  := /usr/share/frobnitz
+#    PACKAGE_CACHE  := /var/spool/frobnitz
+#    PACKAGE_TMP    := /var/tmp/frobnitz
+#    APACHE_ROOT    := /etc/httpd              # -- on RedHat boxen
+#    VAR            := /var
+#    ETC            := /etc
+#    BINDIR         := /usr/bin
+#    SBINDIR        := /usr/sbin
+#    SHARE          := /usr/share
+#    LIBEXEC        := /usr/libexec
+#    MANDIR         := /usr/share/man
+#
+# -- end of Makefile

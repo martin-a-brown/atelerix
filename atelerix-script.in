@@ -1,0 +1,23 @@
+#! /bin/bash
+#
+#
+
+abort () { printf >&2 "%s\n" "$@"; exit 1; }
+
+# -- open up the file in our configuration directory
+#
+. "@PACKAGE_ETC@/main.conf" \
+  || abort "Could not source \"@PACKAGE_ETC@/main.conf\""
+
+# -- print out a note to the world
+#
+printf "%s\n" "Hello ${OBJECT_OF_GREETING:-world} from @PACKAGE@-@VERSION@."
+
+printf "%-50s %s\n" \
+  "Config files would be in:"            "@PACKAGE_ETC@" \
+  "The cache directory would be:"        "@PACKAGE_CACHE@" \
+  "The dedicated tmpdir would be:"       "@PACKAGE_TMP@" \
+  "The package share dir would be:"      "@PACKAGE_SHARE@" \
+  "All code used only by this package:"  "@PACKAGE_ROOT@"
+
+# -- end of file
