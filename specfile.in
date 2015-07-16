@@ -41,7 +41,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(0644,root,root,0755)
-%doc README RELEASE-NOTES README.FAQ PACKAGING-HOWTO.rst
+%doc README RELEASE-NOTES docs/README.FAQ docs/PACKAGING-HOWTO.rst
 
 %dir                   @PACKAGE_ETC@
 %config(noreplace)     @PACKAGE_ETC@/main.conf
