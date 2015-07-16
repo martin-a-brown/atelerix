@@ -489,11 +489,11 @@ distdir:
 
 .PHONY: clean-builddir
 clean-builddir: clean $(SCM_TYPE)-clean
-       rm -rf -- ./build/ 2>/dev/null || :
+	rm -rf -- ./build/ 2>/dev/null || :
 
 .PHONY: clean-distdir
 clean-distdir: clean $(SCM_TYPE)-clean
-       rm -rf -- ./dist/ 2>/dev/null || :
+	rm -rf -- ./dist/ 2>/dev/null || :
 
 .PHONY: distclean
 distclean: obs-clean clean-builddir clean-distdir test-clean
