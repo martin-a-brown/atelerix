@@ -226,12 +226,14 @@ buildselectionhook: $(SCM_TYPE)-export
 	cd ./build/$(CURRENT_PACKAGE) \
 	  && $(MAKE) specfile
 
-# -- integration with a variety of different SCMs below
-#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+#                                  test                                     #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
 .PHONY: tag
 tag: $(SCM_TYPE)-tag
 
-.PHONY: test-clean
+.PHONY: test-tag
 test-tag:
 	echo test tag $(CURRENT_PACKAGE)
 
@@ -258,6 +260,10 @@ test-export: builddir
 	    --directory $(CURRENT_PACKAGE)/build/ \
 	    --file -
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+#                                   git                                     #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
 .PHONY: git-tag
 git-tag:
 	git-tag \
@@ -277,6 +283,25 @@ git-export: builddir
 
 .PHONY: git-clean
 git-clean:
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+#                                   hg                                      #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+# -- support for Mercurial needs more attention, but thanks to
+#    estabroo@gmail.com for the beginnings...
+
+.PHONY: hg-export
+hg-export: builddir
+	hg archive \
+	  --prefix=$(CURRENT_PACKAGE)/ \
+	  --type=tar \
+	  $(HG_ID) \
+	  - \
+	  | tar \
+	    --extract \
+	    --directory ./build/ \
+	    --file -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 #                                   SVN                                     #
@@ -326,6 +351,10 @@ svn-export: builddir
 
 .PHONY: svn-clean
 svn-clean:
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+#                               generic build                               #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 .PHONY: builddir
 builddir:
