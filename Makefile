@@ -61,6 +61,7 @@ CURRENT_PACKAGE := $(PACKAGE)-$(VERSION)
 TARBALL         := $(CURRENT_PACKAGE).tar
 SRPM            := $(PACKAGE)-$(VERSION)-$(RELEASE).src.rpm
 BUILD_MAKEFILE  := Makefile.build
+EXPORT_EXCL     := .extra-test-build-excludes
 
 export PACKAGE VERSION SPECFILE SUBSCRIPT SUBDATA ENCLAVE
 
@@ -171,39 +172,43 @@ endif
 
 .SUFFIXES:
 
-.PHONY: build-clean
-build-clean: $(SUBDATA)
-	rm -f $(PACKAGE).spec
-	$(MAKE) -f $(BUILD_MAKEFILE) build-clean
-
-.PHONY: build
-build: $(SUBDATA)
-	$(MAKE) -f $(BUILD_MAKEFILE) build
-
-.PHONY: install
-install: $(SUBDATA)
-	$(MAKE) -f $(BUILD_MAKEFILE) install
 
 # -- the "rpm" target will build out of the SCM, but will leave
-#    the resulting package in the relative ./build/ directory
+#    the resulting package in the relative ./dist/ directory
 #
+.PHONY: test-rpm testrpm rpm-test rpmtest
+test-rpm testrpm rpm-test rpmtest:
+	$(MAKE) rpm SCM_TYPE=test
+
 .PHONY: rpm
-rpm: rpmlocaldist $(SCM_TYPE)-clean
+rpm: rpmlocaldist clean-builddir
+
+.PHONY: srpm
+srpm: srpmlocaldist clean-builddir
 
 .PHONY: rpms
 rpms: rpm
-
-.PHONY: test-rpm
-test-rpm:
-	$(MAKE) rpm SCM_TYPE=test
 
 .PHONY: rpmlocaldist
 rpmlocaldist: distdir buildrpm
 	mv --verbose \
 	    --target-directory ./dist/ \
-	    build/$(CURRENT_PACKAGE).tar.gz \
-	    build/RPMS/*/$(CURRENT_PACKAGE)*.rpm \
-	    build/SRPMS/$(CURRENT_PACKAGE)*.rpm
+	    build/$(PACKAGE)-$(VERSION)/$(PACKAGE).spec \
+	    build/$(TARBALL).gz \
+	    build/RPMS/*/*.rpm \
+	    build/SRPMS/$(SRPM)
+
+.PHONY: srpmlocaldist
+srpmlocaldist: distdir buildsrpm
+	mv --verbose \
+	    --target-directory ./dist/ \
+	    build/$(PACKAGE)-$(VERSION)/$(PACKAGE).spec \
+	    build/SRPMS/$(TARBALL).gz \
+	    build/SRPMS/$(SRPM)
+
+.PHONY: buildsrpm
+buildsrpm: buildtargz
+	rpmbuild $(RPMDIST) -ts ./build/$(TARBALL).gz
 
 .PHONY: buildrpm
 buildrpm: buildtargz
@@ -229,9 +234,6 @@ buildselectionhook: $(SCM_TYPE)-export
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 #                                  test                                     #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-
-.PHONY: tag
-tag: $(SCM_TYPE)-tag
 
 .PHONY: test-tag
 test-tag:
@@ -356,47 +358,106 @@ svn-clean:
 #                               generic build                               #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
-.PHONY: builddir
-builddir:
-	mkdir -p ./build/{SPECS,SOURCES,RPMS,SRPMS,BUILD}
+.PHONY: branch
+branch: $(SCM_TYPE)-branch
 
-.PHONY: distdir
-distdir:
-	mkdir -p ./dist
+.PHONY: tag
+tag: $(SCM_TYPE)-tag
 
 .PHONY: clean
-clean: build-clean
-	rm -rf $(SUBDATA) ./build/* ./dist/* 2>/dev/null || :
+clean: $(SUBDATA) build-clean pkg-clean
 
 .PHONY: mrclean
 mrclean: clean
 
+.PHONY: pkg-clean
+pkg-clean:
+	rm -f -- $(SUBSCRIPT) $(SUBDATA) $(PACKAGE).spec
+
+.PHONY: builddir
+builddir:
+	rm -rf -- ./build/
+	mkdir -p -- ./build/{SPECS,SOURCES,RPMS,SRPMS,BUILD}
+
+.PHONY: distdir
+distdir:
+	rm -rf -- ./dist/
+	mkdir -p ./dist
+
+.PHONY: clean-builddir
+clean-builddir: clean $(SCM_TYPE)-clean
+       rm -rf -- ./build/ 2>/dev/null || :
+
+.PHONY: clean-distdir
+clean-distdir: clean $(SCM_TYPE)-clean
+       rm -rf -- ./dist/ 2>/dev/null || :
+
 .PHONY: distclean
-distclean: clean $(SCM_TYPE)-clean
-	rmdir ./build/ ./dist/ 2>/dev/null || :
+distclean: obs-clean clean-builddir clean-distdir test-clean
 
 # -- our own recursively called targets
 #
 .PHONY: specfile
-specfile: $(SUBDATA)
+specfile: $(SUBSCRIPT) $(SUBDATA) $(SPECFILE)
 	python $(SUBSCRIPT) $(SUBDATA) < $(SPECFILE) > $(PACKAGE).spec
 
-.PHONY: specfile-conventional
-specfile-conventional: specfile
+.PHONY: vars
+vars: $(SUBDATA)
+	cat $(SUBDATA)
 
-.PHONY: $(SUBDATA)
-$(SUBDATA):
-	@printf > $(SUBDATA) "%-20s %s\n" \
+$(SUBSCRIPT): Makefile
+	@printf > $(SUBSCRIPT) "%s\n" \
+	"#! /usr/bin/env python" \
+	"import sys" \
+	"" \
+	"" \
+	"def transform(mapping, text):" \
+	"    for tag, replacement in mapping.iteritems():" \
+	"        text = text.replace(tag, replacement)" \
+	"    return text" \
+	"" \
+	"if 2 != len(sys.argv):" \
+	"    sys.exit('usage: ' + sys.argv[0] + '<substitution_file>')" \
+	"subst = dict(SUBDATA=sys.argv[1])" \
+	"for line in open(sys.argv[1]):" \
+	"    if line.startswith('#'):" \
+	"        continue" \
+	"    line = line.strip()" \
+	"    if line == '':" \
+	"        continue" \
+	"    parts = line.split(None, 1)" \
+	"    if len(parts) == 2:" \
+	"        (k, v) = parts" \
+	"    else:" \
+	"        k = parts[0]" \
+	"        v = ''" \
+	"    k = '@' + k.strip() + '@'" \
+	"    subst[k] = transform(subst, v.strip())" \
+	"sys.stdout.write(transform(subst, sys.stdin.read()))" \
+	"# -- end of file"
+
+.PHONY: subdata $(SUBDATA)
+subdata $(SUBDATA): pkg-$(SUBDATA) $(SUBDATA)-hook
+
+.PHONY: pkg-$(SUBDATA)
+pkg-$(SUBDATA):
+	@printf > $(SUBDATA) "%s\t%s\n" \
 	  PACKAGE        "$(PACKAGE)" \
 	  VERSION        "$(VERSION)" \
+	  MAJOR_VERSION  "$(MAJOR_VERSION)" \
+	  MAJOR_PACKAGE  "$(MAJOR_PACKAGE)" \
+	  MINOR_VERSION  "$(MINOR_VERSION)" \
+	  MINOR_PACKAGE  "$(MINOR_PACKAGE)" \
 	  DATE           "$(DATE)" \
 	  BUILD_HOST     "$(BUILD_HOST)" \
 	  BUILD_USER     "$(BUILD_USER)" \
 	  RELEASE_DIST   "$(RELEASE_DIST)" \
 	  ROOT           "$(ROOT)" \
+	  NAGIOS_PLUGINS "$(NAGIOS_PLUGINS)" \
 	  PACKAGE_ROOT   "$(PACKAGE_ROOT)" \
 	  PACKAGE_SHARE  "$(PACKAGE_SHARE)" \
 	  PACKAGE_CACHE  "$(PACKAGE_CACHE)" \
+	  PACKAGE_SPOOL  "$(PACKAGE_SPOOL)" \
 	  PACKAGE_ETC    "$(PACKAGE_ETC)" \
 	  PACKAGE_TMP    "$(PACKAGE_TMP)" \
 	  APACHE_ROOT    "$(APACHE_ROOT)" \
@@ -407,8 +468,12 @@ $(SUBDATA):
 	  ETC            "$(ETC)" \
 	  VAR            "$(VAR)" \
 	  SHARE          "$(SHARE)"
-	$(MAKE) -f $(BUILD_MAKEFILE) $(SUBDATA)-hook
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+#                    user-controlled per package stuff                      #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+include $(BUILD_MAKEFILE)
 
 # -- documentation target(s)
 #
