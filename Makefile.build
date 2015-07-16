@@ -85,7 +85,8 @@ install: build
 #    PACKAGE_ROOT   := /usr/lib/frobnitz
 #    PACKAGE_ETC    := /etc/atelerix/frobnitz
 #    PACKAGE_SHARE  := /usr/share/frobnitz
-#    PACKAGE_CACHE  := /var/spool/frobnitz
+#    PACKAGE_SPOOL  := /var/spool/frobnitz
+#    PACKAGE_CACHE  := /var/cache/frobnitz
 #    PACKAGE_TMP    := /var/tmp/frobnitz
 #    APACHE_ROOT    := /etc/httpd              # -- on RedHat boxen
 #    VAR            := /var
