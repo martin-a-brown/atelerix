@@ -7,8 +7,9 @@ Group:          System Environment/Base
 License:        empty
 URL:            http://www.renesys.com/
 Source0:        %{name}-%{version}.tar.gz
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%__id -u -n)
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(id -u -n)
 BuildArch:	noarch
+BuildRequires:  python
 # BuildRequires:  postgresql-devel
 # Requires:       SQLAlchemy
 
