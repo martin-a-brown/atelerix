@@ -56,8 +56,13 @@ ENCLAVE         := atelerix
 
 SUBSCRIPT       := substitute.py
 SUBDATA         := $(ENCLAVE).subdata
+SCM_TYPE        := $(shell test -e .svn && echo svn || { test -e .git && echo git || { test -e .hg && echo hg || { echo test ; } ; } ; } )
+CURRENT_PACKAGE := $(PACKAGE)-$(VERSION)
+TARBALL         := $(CURRENT_PACKAGE).tar
+SRPM            := $(PACKAGE)-$(VERSION)-$(RELEASE).src.rpm
+BUILD_MAKEFILE  := Makefile.build
 
-export PACKAGE VERSION SPECFILE SUBSCRIPT SUBDATA
+export PACKAGE VERSION SPECFILE SUBSCRIPT SUBDATA ENCLAVE
 
 # -- conditional build/installation target logic (extracted)
 #
@@ -96,21 +101,44 @@ export APACHE_ROOT
 
 default: rpm
 
+# -- details needed for various SCM/VCS integration
+#
+ifeq ($(SCM_TYPE),svn)
+  SVN_PATH        := $(shell svn info 2>/dev/null | awk '/^URL:/{print $$2}')
+  SVN_PROJ        := $(subst branches/,,$(subst tags/,,$(dir $(SVN_PATH))))
+  SVN_PROJSHORT   := $(lastword $(subst /, ,$(SVN_PROJ)))
+  ifeq      ($(SVN_PROJSHORT),$(PACKAGE))
+  else ifeq ($(SVN_PROJSHORT),$(MAJOR_PACKAGE))
+  else ifeq ($(SVN_PROJSHORT),$(MINOR_PACKAGE))
+  else ifeq ($(SVN_PROJSHORT),$(CURRENT_PACKAGE))
+  else
+    $(warning )
+    $(warning Discrepancy:)
+    $(warning )
+    $(warning Specfile shows package name $(PACKAGE) )
+    $(warning Subversion has project name $(SVN_PROJSHORT))
+    $(warning See SVN path $(SVN_PATH))
+    $(warning )
+    $(warning Sleeping for 2 seconds before continuing anyway... )
+    $(warning )
+    $(shell sleep 2)
+  endif
+else ifeq ($(SCM_TYPE),git)
+  GIT_ID          := remotes/svn/$(CURRENT_PACKAGE)
+endif
+
+# -- Notes on SCM/VCS variables
+#
+# SVN_PATH:  Full svn checkout path.
+# GIT_ID:  Any "tree-ish" thing that you want to refer to.  For tagging and
+#          branching and building from the git repo.
+
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 #                                                                           #
-#        end of preamble for package building out of git/svn/cvs            #
+#        end of preamble for package building out of git/svn/hg             #
 #                                                                           #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-
-SCM_TYPE := git
-CVS_PATH := $(shell cat 2>/dev/null CVS_PATH)
-SVN_PATH := $(shell svn info 2>/dev/null | awk '/^URL:/{print $$2}')
-
-CURRENT_PACKAGE := $(PACKAGE)-$(VERSION)
-TARBALL         := $(CURRENT_PACKAGE).tar
-BUILD_MAKEFILE  := Makefile.build
-GIT_ID          := $(CURRENT_PACKAGE)
-CVS_ID          := $(subst .,-, $(CURRENT_PACKAGE))
 
 .SUFFIXES:
 
@@ -193,7 +221,6 @@ test-export: builddir prepclean
 	    --to-stdout \
 	    --exclude "*.git*" \
 	    --exclude "*.svn*" \
-	    --exclude "*/CVS/*" \
 	    --exclude "$(CURRENT_PACKAGE)/dist/*" \
 	    --exclude "$(CURRENT_PACKAGE)/build/*" \
 	      $(CURRENT_PACKAGE) \
@@ -221,18 +248,6 @@ git-export: builddir prepclean
 
 .PHONY: git-clean
 git-clean:
-
-.PHONY: cvs-tag
-cvs-tag:
-	cvs tag -c $(CVS_ID)
-
-.PHONY: cvs-export
-cvs-export: builddir prepclean
-	cd ./build/ \
-	  && cvs export -r $(CVS_ID) -d $(CURRENT_PACKAGE) $(PACKAGE)
-
-.PHONY: cvs-clean
-cvs-clean:
 
 .PHONY: svn-trunk-must-be-pwd
 svn-trunk-must-be-pwd:
@@ -351,13 +366,6 @@ help:
 	"which is an exact analog of the above command." \
 	"" \
 	"  make test-rpm" \
-	"" \
-	"Let's say you're a total CVS aficionado and you cannot stand to be" \
-	"without your horribly broken VCS.  Well, you can still have the worst" \
-	"of the old world (but you'll have to commit a file called CVS_PATH" \
-	"which contains the CVS checkout path, silly)" \
-	"" \
-	"  make rpm SCM_TYPE=cvs" \
 	"" \
 	"If you are using git, the rules are pretty much the same:" \
 	"" \
