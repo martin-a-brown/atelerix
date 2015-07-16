@@ -26,15 +26,24 @@ BUILT_FILES += main.conf
 CLEAN_FILES :=
 MANPAGES    := 
 POD2MANS    :=
-RST2HTML    :=
-
-# RST2HTML    := PACKAGING-HOWTO.html
 
 # -- Are you planning on making this a service?  Add the following line
 #    and describe the environment of your process in renserv.cfg.in.
 #    Put your long-running daemon in start.in.
 #
 BUILT_FILES += start renserv.cfg
+
+# -- Used by the tests target--any package-specific TESTARGS should go
+#    in here, but default, empty.
+#
+TESTARGS :=
+
+# -- Do you need custom variables of your own in the Makefile.build and
+#    replaced inline in the code?  See how MY_VARIABLE is added to the
+#    substitution script data in $(SUBDATA)-hook below.  The variable
+#    can be used just like @PACKAGE_ETC@ in your .in files.
+#
+# MY_VARIABLE  := contents_of_variable
 
 $(BUILT_FILES): %: %.in $(SUBDATA)
 	python $(SUBSCRIPT) $(SUBDATA) < $< > $@
@@ -45,9 +54,6 @@ $(MANPAGES): %.1: %
 $(POD2MANS): %.1: %.pod
 	pod2man --section 1 > $@ $<
 
-$(RST2HTML): %.html: %.rst
-	rst2html.py > $@ $<
-
 .PHONY: build-clean
 build-clean:
 	rm -f $(SUBDATA) $(BUILT_FILES) $(MANPAGES) $(POD2MANS) $(RST2HTML)
@@ -57,6 +63,10 @@ $(SUBDATA)-hook: $(SUBDATA)
 
 .PHONY: build 
 build: $(SUBDATA)-hook $(BUILT_FILES) $(MANPAGES) $(POD2MANS) $(RST2HTML)
+
+.PHONY: tests
+tests: build
+	./test.sh $(TESTARGS)
 
 .PHONY: install
 install: build
@@ -75,6 +85,28 @@ install: build
 	# mkdir -p                  $(DESTDIR)$(PACKAGE_SHARE)
 	# install -m 0644 something $(DESTDIR)$(PACKAGE_SHARE)
 	#
+	# -- This packaging system CAN work with Python, if you like...
+	# -- Have Python drop its bits (modules, etc.) into the $(DESTDIR) and
+	#    keep track of what it put in there... then use %files -f INSTALLED_FILES
+	#    in your specfile.in
+	#
+	#python setup.py install -O1 --root=$(DESTDIR) --record=INSTALLED_FILES
+	#
+
+# MY_VARIABLE := something_silly
+# ANOTHER_VAR := /path/to/somewhere/else
+# and for the target fragment
+#      @printf >> $(SUBDATA) "%s\t%s\n" \
+#        MY_VARIABLE         "$(MY_VARIABLE)" \
+#        ANOTHER_VAR         "$(ANOTHER_VAR)"
+.PHONY: $(SUBDATA)-hook
+$(SUBDATA)-hook:
+
+# -- Would you like to skip certain files or directories from $PWD during
+#    'make testrpm'?  Just put filenames into the $(EXPORT_EXCL) file
+$(EXPORT_EXCL)::
+	touch $(EXPORT_EXCL)
+
 
 # -- The following Makefile variables are available to you here for
 #    controlling the destination directory of your installation.  The
@@ -88,6 +120,7 @@ install: build
 #    PACKAGE_SPOOL  := /var/spool/frobnitz
 #    PACKAGE_CACHE  := /var/cache/frobnitz
 #    PACKAGE_TMP    := /var/tmp/frobnitz
+#    NAGIOS_PLUGINS := /usr/lib/nagios/plugins
 #    APACHE_ROOT    := /etc/httpd              # -- on RedHat boxen
 #    VAR            := /var
 #    ETC            := /etc
@@ -97,4 +130,4 @@ install: build
 #    LIBEXEC        := /usr/libexec
 #    MANDIR         := /usr/share/man
 #
-# -- end of Makefile
+# -- end of Makefile.build
