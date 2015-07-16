@@ -64,11 +64,36 @@ BUILD_MAKEFILE  := Makefile.build
 
 export PACKAGE VERSION SPECFILE SUBSCRIPT SUBDATA ENCLAVE
 
-# -- conditional build/installation target logic (extracted)
+# -- Notes on above variables
 #
-RELEASE_DIST   :=
-ROOT           := 
-USRROOT        := $(ROOT)/usr
+# SHELL:  should be explicitly set to bash; otherwise build is occasionally
+#         suspect to unexpected failures in a foreign shell (the shell in
+#         this Makefile is bash)
+# DIRNAME:  Required for rpmbuild--rpmbuild cannot deal with relative
+#           directories.  Additionally required to determine DIRBASE.
+# DIRBASE:  Required for the test build targets.  When attempting a build
+#           from the user's home directory, need to fake the pathname to
+#           create a tarball.  Therefore need to know what the real name is
+#           (probably trunk) and make a symlink to $(PACKAGE)-$(VERSION)
+# SPECFILE: Hard-coded name.  Always specfile.in.
+# RPMCMD:   The command used to extract NAME and VERSION information from
+#           the specfile.in.
+# PACKAGE:  Yes, the package name.  Should be set only in specfile.in.
+# VERSION:  Yes, the software version.  Should be set only in specfile.in.
+# RPMDIST:  Boiler plate option when not using user's build environment.
+# DATE:  A string date for substitution at build time.
+# BUILD_HOST:  Name of the host on which the software was built.
+# BUILD_USER:  Name of the user who built the software (Jack).
+# ENCLAVE:  Name of the class of package, e.g. 'renesys', 'atelerix'
+# SUBSCRIPT:  The equivalent of 'sed -e' using the subdata file.
+# SUBDATA:  The name of the file containing the substitution data.
+# SCM_TYPE:  By default, 'svn' inside Renesys.
+# CURRENT_PACKAGE:  For tarball, dir, branch and tag naming, for example:
+#                   frobnitz-0.4.2.
+# TARBALL:  Name of the tarball (without path).
+# BUILD_MAKEFILE:  The well-known name of the Makefile.build.
+
+
 
 # -- Need to add a new variable?
 #
@@ -76,22 +101,26 @@ USRROOT        := $(ROOT)/usr
 #      - export it (so it's available to "child" Makefiles)
 #      - throw it in the $(SUBDATA) target for transformations
 #
+ROOT           := 
+USRROOT        := $(ROOT)/usr
 VAR            := $(ROOT)/var
 ETC            := $(ROOT)/etc
 PACKAGE_ETC    := $(ETC)/$(ENCLAVE)/$(PACKAGE)
 PACKAGE_ROOT   := $(USRROOT)/lib/$(PACKAGE)
 PACKAGE_SHARE  := $(USRROOT)/share/$(PACKAGE)
-PACKAGE_CACHE  := $(VAR)/spool/$(PACKAGE)
+PACKAGE_SPOOL  := $(VAR)/spool/$(PACKAGE)
+PACKAGE_CACHE  := $(VAR)/cache/$(PACKAGE)
 PACKAGE_TMP    := $(VAR)/tmp/$(PACKAGE)
 LIBEXEC        := $(USRROOT)/libexec
 SHARE          := $(USRROOT)/share
 MANDIR         := $(USRROOT)/share/man
 BINDIR         := $(USRROOT)/bin
 SBINDIR        := $(USRROOT)/sbin
+NAGIOS_PLUGINS := $(USRROOT)/lib/nagios/plugins
 
-export RELEASE_DIST ROOT LIBEXEC SHARE MANDIR ETC BINDIR SBINDIR VAR
-export PACKAGE_ROOT PACKAGE_SHARE PACKAGE_ETC PACKAGE_CACHE PACKAGE_TMP
-export DATE BUILD_HOST BUILD_USER
+export ROOT LIBEXEC SHARE MANDIR ETC BINDIR SBINDIR VAR NAGIOS_PLUGINS
+export PACKAGE_ROOT PACKAGE_SHARE PACKAGE_ETC PACKAGE_CACHE PACKAGE_SPOOL
+export PACKAGE_TMP DATE BUILD_HOST BUILD_USER
 
 # -- weirdo extras
 #
@@ -99,7 +128,7 @@ APACHE_ROOT=$(shell test -e /etc/SuSE-release && echo /etc/apache2 || echo /etc/
 
 export APACHE_ROOT
 
-default: rpm
+default: build
 
 # -- details needed for various SCM/VCS integration
 #
