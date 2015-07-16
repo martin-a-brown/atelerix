@@ -19,9 +19,28 @@ SHELL           := /bin/bash
 DIRNAME         := $(abspath .)
 DIRBASE         := $(notdir $(DIRNAME))
 SPECFILE        := specfile.in
-CMD             := rpm -q --specfile $(SPECFILE)
-PACKAGE         := $(shell $(CMD) --queryformat="%{NAME}\n" | head -n 1)
-VERSION         := $(shell $(CMD) --queryformat="%{VERSION}\n" | head -n 1)
+RPMSPEC         := $(shell which rpmspec 2>/dev/null)
+ifeq ($(RPMSPEC),)
+       RPMCMD := rpm -q --specfile $(SPECFILE)
+else
+       RPMCMD := $(RPMSPEC) -q $(SPECFILE)
+endif
+RPMINFO         := $(shell $(RPMCMD) --queryformat="%{NAME} %{VERSION} %{RELEASE}\n" 2>/dev/null  )
+PACKAGE         := $(shell $(RPMCMD) --queryformat="%{NAME}\n" 2>/dev/null | head -n 1)
+
+# -- OK, quick sanity check to make sure that the specfile.in passes
+#    muster; normally 'rpm' is informative about errors, so we can just
+#    short-circuit any further action if the above has failed.
+#
+ifeq ($(PACKAGE),)
+  $(error Error reading/parsing specfile.in: is it valid? (try: rpm -q --specfile specfile.in))
+endif
+
+# -- OK, now keep going, if all is happy so far
+#
+PACKAGE         := $(word 1, $(RPMINFO))
+VERSION         := $(word 2, $(RPMINFO))
+RELEASE         := $(word 3, $(RPMINFO))
 RPMDIST         := --define "_topdir $(DIRNAME)/build/"
 DATE            := $(shell date +%F)
 BUILD_HOST      := $(shell hostname)
