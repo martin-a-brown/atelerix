@@ -1,0 +1,18 @@
+
+2015-07-16: agglomerated patches all incorporated along with improved
+  documentation and the following major features:
+    * almost complete elimination of recursive calls to make
+    * generate substitute.py from within makefile
+    * prepare to make atelerix driver useable via a Makefile 'include'
+    * nagios subpackage support
+    * provide some support for including Python packages
+    * remote tagging and branching supported for subversion
+    * support pushing completed, built packages to OBS (Open Build Service)
+    * improve the 'help' documentation tremendously
+    * remove support for depotlite packages
+
+(many years of use and small incremental improvements by many internal Renesys
+contributors; code was never sent upstream)
+
+2009-02-14: initial public release of atelerix, used and supported internally
+  at Renesys corporation
