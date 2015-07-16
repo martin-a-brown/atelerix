@@ -542,7 +542,6 @@ $(SUBSCRIPT): Makefile
 .PHONY: subdata $(SUBDATA)
 subdata $(SUBDATA): pkg-$(SUBDATA) $(SUBDATA)-hook
 
-.PHONY: pkg-$(SUBDATA)
 pkg-$(SUBDATA):
 	@printf > $(SUBDATA) "%s\t%s\n" \
 	  PACKAGE        "$(PACKAGE)" \
