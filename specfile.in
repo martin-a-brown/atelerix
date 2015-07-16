@@ -1,6 +1,6 @@
 Name:           atelerix
 Version:        0.2.14
-Release:        1@RELEASE_DIST@
+Release:        1
 Summary:        A simple atelerix example package.
 
 Group:          System Environment/Base
