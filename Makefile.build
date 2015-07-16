@@ -67,7 +67,7 @@ tests: build
 
 .PHONY: install
 install: build
-	# -- put things into /usr/lib/$PACKAGE
+	# -- put things into /usr/lib/$(PACKAGE)
 	#
 	mkdir -p                         $(DESTDIR)$(PACKAGE_ROOT)
 	install -m 0755 atelerix-script  $(DESTDIR)$(PACKAGE_ROOT)
