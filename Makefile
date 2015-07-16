@@ -242,7 +242,7 @@ test-tag:
 .PHONY: test-clean
 test-clean:
 	cd .. \
-	  && rm "$(CURRENT_PACKAGE)"
+	  && ( test ! -L "$(CURRENT_PACKAGE)" || rm -f -- "$(CURRENT_PACKAGE)/$(EXPORT_EXCL)" "$(CURRENT_PACKAGE)" )
 
 .PHONY: test-export
 test-export: builddir
@@ -252,8 +252,10 @@ test-export: builddir
 	    --create \
 	    --dereference \
 	    --to-stdout \
+	    $(patsubst %,--exclude "$(CURRENT_PACKAGE)/%",$(shell cat $(EXPORT_EXCL) )) \
 	    --exclude "*.git*" \
 	    --exclude "*.svn*" \
+	    --exclude "*.hg*" \
 	    --exclude "$(CURRENT_PACKAGE)/dist/*" \
 	    --exclude "$(CURRENT_PACKAGE)/build/*" \
 	      $(CURRENT_PACKAGE) \
@@ -268,13 +270,13 @@ test-export: builddir
 
 .PHONY: git-tag
 git-tag:
-	git-tag \
+	git tag \
 	  -a -m $(CURRENT_PACKAGE) \
 	  $(CURRENT_PACKAGE)
 
 .PHONY: git-export
 git-export: builddir
-	git-archive \
+	git archive \
 	  --format=tar \
 	  --prefix=$(CURRENT_PACKAGE)/ \
 	  $(GIT_ID) \
