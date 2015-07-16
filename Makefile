@@ -572,41 +572,110 @@ include $(BUILD_MAKEFILE)
 help:
 	@printf "%s\n" \
 	"Makefile for atelerix-based packages" \
-	"------------------------------------" \
-	"Valid targets are 'rpm', 'rpms' and 'rpmdist'." \
+	"--------------------------------------" \
 	"" \
-	"  rpm     ('make rpm'):" \
-	"  rpms    ('make rpms'):" \
+	"make" \
+	"make build" \
+	"  Default behaviour (when no target is specified) is to call the 'build'" \
+	"  target.  This creates the derived files, turning PROGGIE.in into PROGGIE." \
+	"  When you call 'make build', the variables file called '$(SUBDATA)'" \
+	"  is created and then the Makefile.build 'build' target is called." \
 	"" \
-	"Specifying (either of) these targets will cause the packages to be" \
-        "built into the relative directory ./build/.  If the build is succesful," \
-        "the resulting RPM and SRPMs will be moved into the ./dist/ directory." \
+	"make rpm" \
+	"  Specifying the 'rpm' target will cause the packages to be built into" \
+	"  the relative directory ./build/.  If the build is succesful, the" \
+	"  tarball, specfile, RPM and SRPM will be found in the ./dist/" \
+	"  directory." \
 	"" \
-	"  rpmdist ('make rpmdist'):" \
+	"make rpmdist" \
+	"  If you have a build environment configured, you can specify the 'rpmdist'" \
+	"  target and the environment-specified .rpmmacros will be honored, leaving" \
+	"  the resulting packages in the environment configured RPM tree," \
+	"  thus allowing you to build directly into an existing RPM-MD repository." \
+	"  Useful if you already have a build environment you wish to use." \
+	"  Supported, but (possibly) superfluous target, see instead 'obs' target." \
 	"" \
-	"Specifying this target will not override the user-configured RPM build," \
-	"environment thus allowing the user to build directly into an existing RPM-MD" \
-        "repository.  Useful if you already have a build environment you wish to use." \
+	"make testrpm" \
+	"  This builds the package straight out of the current working directory." \
+	"  That allows you to test that the package builds cleanly before checking" \
+	"  in any code.  This target creates a tarball from your working directory." \
+	"  If you have large data files that are not part of the package, you can" \
+	"  create a file called '$(EXPORT_EXCL)' which should list the" \
+        "  files to add to the --exclude params for the tar command." \
 	"" \
-	"By default, this package uses SCM_TYPE=$(SCM_TYPE).  You can control" \
-	"which SCM_TYPE you would like to use for the build of this package by" \
-	"setting the SCM_TYPE package type on the command line.  Here's how" \
-	"you can build out of a working directory without checking in code:" \
+	"make rpm SCM_TYPE=test" \
+	"make test-rpm" \
+	"  These are synonyms for 'make testrpm'" \
 	"" \
-	"  make rpm SCM_TYPE=test" \
+	"make branch" \
+	"  The result is that you have captured a snapshot of the current release" \
+	"  of the software in subversion, and it can be rebuilt from that branch." \
+	"  You can then continue developing against ./trunk/ or your new branch." \
+	"  By default a branch for this package would be $(BRANCHNAME)." \
+	"  You can override the default branch name with a variable, for example:" \
+ 	"" \
+	"    'make branch BRANCHNAME=hairy_ogre-0.7.5'" \
+ 	"" \
+	"make tag" \
+	"  After you have checked that your package builds, using 'make testrpm'," \
+	"  and you have adjusted the version number in specfile.in and committed" \
+	"  that specfile.in, you can take advantage of the 'make tag' feature." \
+	"  When you call 'make tag', the Makefile runs a few sanity checks and" \
+	"  then creates a tag for the current version of the package." \
+ 	"" \
+	"make rpm SCM_TYPE=svn" \
+	"  Atelerix tries to guess your VCS, but you can override it.  Thus," \
+	"  by default, this package uses SCM_TYPE=$(SCM_TYPE).  You can control" \
+	"  which SCM_TYPE you would like to use for the build of this package by" \
+	"  setting the SCM_TYPE package type on the command line." \
 	"" \
-	"Because building a test package is such a common pattern (building from" \
-	"a working directory), there is a target just for building such a package," \
-	"which is an exact analog of the above command." \
+	"make rpm SCM_TYPE=git" \
+	"make rpm SCM_TYPE=git GIT_ID=HEAD" \
+	"  If you live in the future, you may already be using 'git' (or 'git-svn')" \
+	"  and, therefore, can use GIT_IDs to build packages straight out of your" \
+	"  cloned git repo." \
 	"" \
-	"  make test-rpm" \
+	"make obs" \
+	"  Atelerix can push to the Open Build Service software to manage software" \
+	"  build and distribution.  Calling this target will build the package" \
+	"  straight from the version control system and upload the result into" \
+	"  the specified OBS project (default is $(OBSPROJECT))." \
 	"" \
-	"If you are using git, the rules are pretty much the same:" \
-	"" \
-	"  make rpm SCM_TYPE=git" \
-	"  make rpm SCM_TYPE=git GIT_ID=HEAD" \
-	"" \
-
+	"  N.B. For the OBS targets, it is required that the user have already" \
+	"  configured a $(OSCRC) and a working 'osc' CLI access to the build" \
+	"  service instance." \
+ 	"" \
+	"make obsdev    # (also 'obs-dev')" \
+	"  A few convenience targets for sending packages to internal " \
+	"  infrastructure. This target will build in the OBS project 'dev:internal'." \
+ 	"" \
+	"make testobs" \
+	"  This is shorthand for 'make obs SCM_TYPE=test', which builds the" \
+	"  current working directory as a package and then uploads that result" \
+	"  into the specified OBS project." \
+ 	"" \
+	"Make Variables:" \
+	"  SCM_TYPE:    source control manager, default here is '$(SCM_TYPE)'" \
+	"  GIT_ID:      a git hash ID, refers to tag/branch, default is '$(GIT_ID)'" \
+	"  OBSUSER:     username for new OBS packages, default from ~/.oscrc" \
+	"  OBSPROJECT:  project for this package, defaults to '$(OBSPROJECT)'" \
+ 	"" \
+	"make build" \
+	"make install" \
+	"make tests" \
+	"make docs" \
+	"make some_random_other_thing" \
+	"  These targets are handled in Makefile.build.  If you are using this " \
+	"  and you happen not have rpm available, you might stick a dummy script " \
+	"  named 'rpm' somewhere it will be found so that you can still 'make tests'" \
+	"  or 'make docs'." \
+	"  e.g.  printf \"%s\\n\" '#!/bin/sh' 'echo dummy rpm' > ~/bin/rpm \\" \
+	"        && chmod +x ~/bin/rpm && echo 'make sure ~/bin/ is on your PATH!'" \
+ 	"" \
+	"make help" \
+	"  Print this out." \
+	""
+ 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 #                                                                           #
 #                             end of Makefile                               #
