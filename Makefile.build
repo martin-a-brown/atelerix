@@ -27,12 +27,6 @@ CLEAN_FILES :=
 MANPAGES    := 
 POD2MANS    :=
 
-# -- Are you planning on making this a service?  Add the following line
-#    and describe the environment of your process in renserv.cfg.in.
-#    Put your long-running daemon in start.in.
-#
-BUILT_FILES += start renserv.cfg
-
 # -- Used by the tests target--any package-specific TESTARGS should go
 #    in here, but default, empty.
 #
@@ -72,17 +66,18 @@ install: build
 	mkdir -p                         $(DESTDIR)$(PACKAGE_ROOT)
 	install -m 0755 atelerix-script  $(DESTDIR)$(PACKAGE_ROOT)
 	#
-	# -- install config files into /etc/atelerix/$PACKAGE
+	# -- install config files into /etc/atelerix/$(PACKAGE)
 	#
 	mkdir -p                  $(DESTDIR)$(PACKAGE_ETC)
 	install -m 0644 main.conf $(DESTDIR)$(PACKAGE_ETC)
 	#
-	# -- install the example service configuration file for renserv
+	# -- install any data files into /usr/share/$(PACKAGE)
 	#
 	# mkdir -p                  $(DESTDIR)$(PACKAGE_SHARE)
 	# install -m 0644 something $(DESTDIR)$(PACKAGE_SHARE)
 	#
 	# -- This packaging system CAN work with Python, if you like...
+	#
 	# -- Have Python drop its bits (modules, etc.) into the $(DESTDIR) and
 	#    keep track of what it put in there... then use %files -f INSTALLED_FILES
 	#    in your specfile.in
