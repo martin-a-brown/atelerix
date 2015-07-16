@@ -67,6 +67,33 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Sat Feb 14 2009 Martin A. Brown <mabrown@renesys.com>
-  [0.0.9-1]
-- initial work
+* Thu Jul 16 2015 Martin A. Brown <martin@linux-ip.net> [0.2.14]
+  - incorporating all patches from Renesys years
+  - improving documentation and moving to its own directory
+
+* Fri Jun 21 2013 Martin A. Brown <mabrown@renesys.com> [0.2.0-1]
+  - source ('include') Makefile.build; no more PASSTHROUGH crap
+  - eliminate several recursive calls to 'make' (speedup)
+  - patch for tag/branch separately; MAJOR_VERSION, etc. (thx Paul)
+  - add commented-out boilerplate for those using Python packages
+  - remove depotlite and RELEASE_DIST entirely from build system
+  - replace BUILD_TYPE (depotlite/conventional) with ENCLAVE (renesys)
+  - generate substitute.py on demand (from Makefile)
+  - for svn only, grouse if svn path and package name differ
+
+* Mon Oct 18 2010 Martin A. Brown <mabrown@renesys.com> [0.1.27-1]
+  - support for remote tagging/branching, refs #466
+
+* Thu Apr  8 2010 Martin A. Brown <mabrown@renesys.com> [0.1.25-1]
+  - adding support for pushing to OBS
+  - adding sanity check that specfile.in is syntactically valid
+  - improving documentation ('make help' output; comments on Makefile vars)
+
+* Wed Mar 31 2010 Martin A. Brown <mabrown@renesys.com> [0.1.21-1]
+  - addressing (Renesys internal) trac #39 [unknown as of 2015-07-16]
+
+* Thu Jun 25 2009 Martin A. Brown <mabrown@renesys.com> [0.1.20-1]
+  - put more things in dist, clean up better after package build
+
+* Sat Feb 14 2009 Martin A. Brown <mabrown@renesys.com> [0.0.9]
+  - initial work
