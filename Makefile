@@ -383,7 +383,7 @@ svn-clean:
 
 .PHONY: obs-clean
 obs-clean: clean $(SCM_TYPE)-clean
-       test "$(OBSROOT)" == "$(OBSDEFROOT)" && rm -rf -- $(OBSROOT)/ 2>/dev/null || :
+       test "$(OBSROOT)" == "$(OBSDEFROOT)" && rm -rf -- "$(OBSROOT)/" 2>/dev/null || :
 
 .PHONY: obs-project
 obs-project:
