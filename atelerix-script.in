@@ -11,7 +11,7 @@ abort () { printf >&2 "%s\n" "$@"; exit 1; }
 
 # -- print out a note to the world
 #
-printf "%s\n" "Hello ${OBJECT_OF_GREETING:-world} from @PACKAGE@-@VERSION@."
+printf "%s\n" "" "Hello ${OBJECT_OF_GREETING:-world}, from @PACKAGE@-@VERSION@." ""
 
 printf "%-50s %s\n" \
   "Config files would be in:"            "@PACKAGE_ETC@" \
