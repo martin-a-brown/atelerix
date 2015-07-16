@@ -41,14 +41,15 @@ endif
 PACKAGE         := $(word 1, $(RPMINFO))
 VERSION         := $(word 2, $(RPMINFO))
 RELEASE         := $(word 3, $(RPMINFO))
+
 RPMDIST         := --define "_topdir $(DIRNAME)/build/"
 DATE            := $(shell date +%F)
 BUILD_HOST      := $(shell hostname)
 BUILD_USER      := $(shell id -un)
-SUBSCRIPT       := substitute.py
-BUILD_TYPE      := conventional
-SUBDATA         := subdata.$(BUILD_TYPE)
 ENCLAVE         := atelerix
+
+SUBSCRIPT       := substitute.py
+SUBDATA         := $(ENCLAVE).subdata
 
 export PACKAGE VERSION SPECFILE SUBSCRIPT SUBDATA
 
@@ -120,18 +121,6 @@ build: $(SUBDATA)
 install: $(SUBDATA)
 	$(MAKE) -f $(BUILD_MAKEFILE) install
 
-# -- the "rpmdist" target will build out of the SCM, but will
-#    use the user's default build settings (which in many cases
-#    is exposed as an RPM repository)
-#
-.PHONY: rpmdist
-rpmdist: dist-rpm
-
-.PHONY: dist-rpm
-dist-rpm:
-	$(MAKE) buildrpm BUILD_TYPE=conventional RPMDIST=
-	$(MAKE) distclean
-
 # -- the "rpm" target will build out of the SCM, but will leave
 #    the resulting package in the relative ./build/ directory
 #
@@ -172,7 +161,7 @@ buildtarball: buildselectionhook
 .PHONY: buildselectionhook
 buildselectionhook: $(SCM_TYPE)-export
 	cd ./build/$(CURRENT_PACKAGE) \
-	  && $(MAKE) specfile-$(BUILD_TYPE)
+	  && $(MAKE) specfile
 
 # -- integration with a variety of different SCMs below
 #
@@ -278,7 +267,7 @@ prepclean:
 
 .PHONY: clean
 clean: build-clean
-	rm -rf subdata.$(BUILD_TYPE) ./build/* ./dist/* 2>/dev/null || :
+	rm -rf $(SUBDATA) ./build/* ./dist/* 2>/dev/null || :
 
 .PHONY: mrclean
 mrclean: clean
