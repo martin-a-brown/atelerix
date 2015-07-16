@@ -252,14 +252,22 @@ test-clean:
 	cd .. \
 	  && ( test ! -L "$(CURRENT_PACKAGE)" || rm -f -- "$(CURRENT_PACKAGE)/$(EXPORT_EXCL)" "$(CURRENT_PACKAGE)" )
 
+.PHONY: test-linkname
+test-linkname:
+	cd .. \
+	  && ( test -e "$(CURRENT_PACKAGE)" || ln -snvf -- "$(DIRBASE)" "$(CURRENT_PACKAGE)" )
+
+.PHONY: test-linkname-must-be-pwd
+test-linkname-must-be-pwd:
+	test ../$(CURRENT_PACKAGE)/ -ef .
+
 # -- There exists general dislike (amongst several people) that this
 #    'test-export' target mucks with directories above the $CWD.  That
 #    is generally considered bad behaviour
 #
 .PHONY: test-export
-test-export: builddir
+test-export: builddir test-linkname test-linkname-must-be-pwd $(EXPORT_EXCL)
 	cd .. \
-	  && ln -snvf $(DIRBASE) $(CURRENT_PACKAGE) \
 	  && tar \
 	    --create \
 	    --dereference \
