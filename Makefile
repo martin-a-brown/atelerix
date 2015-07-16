@@ -61,6 +61,11 @@ CURRENT_PACKAGE := $(PACKAGE)-$(VERSION)
 TARBALL         := $(CURRENT_PACKAGE).tar
 SRPM            := $(PACKAGE)-$(VERSION)-$(RELEASE).src.rpm
 BUILD_MAKEFILE  := Makefile.build
+OSCRC           := $(shell echo $$HOME/.oscrc )
+OBSUSER         := $(shell python -c 'import ConfigParser, sys; c = ConfigParser.ConfigParser(); c.read(sys.argv[1]) or sys.exit("error reading " + sys.argv[1]); print c.get(c.get("general", "apiurl"), "user")' $(OSCRC) )
+OBSPROJECT      := home:$(OBSUSER)
+OBSDEFROOT      := ./obs
+OBSROOT         := ./obs
 EXPORT_EXCL     := .extra-test-build-excludes
 
 export PACKAGE VERSION SPECFILE SUBSCRIPT SUBDATA ENCLAVE
@@ -93,6 +98,9 @@ export PACKAGE VERSION SPECFILE SUBSCRIPT SUBDATA ENCLAVE
 #                   frobnitz-0.4.2.
 # TARBALL:  Name of the tarball (without path).
 # BUILD_MAKEFILE:  The well-known name of the Makefile.build.
+# OBSPROJECT:  Which OBS project to use as upload target for the package.
+# OSCRC:  Configuration file which contains OBS username.
+# OBSUSER:  Username to put in meta-information for the package.
 
 
 
@@ -256,6 +264,7 @@ test-export: builddir
 	    --exclude "*.git*" \
 	    --exclude "*.svn*" \
 	    --exclude "*.hg*" \
+	    --exclude "$(CURRENT_PACKAGE)/obs/*" \
 	    --exclude "$(CURRENT_PACKAGE)/dist/*" \
 	    --exclude "$(CURRENT_PACKAGE)/build/*" \
 	      $(CURRENT_PACKAGE) \
@@ -355,6 +364,86 @@ svn-export: builddir
 
 .PHONY: svn-clean
 svn-clean:
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+#                                   OBS                                     #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+.PHONY: obs-clean
+obs-clean: clean $(SCM_TYPE)-clean
+       test "$(OBSROOT)" == "$(OBSDEFROOT)" && rm -rf -- $(OBSROOT)/ 2>/dev/null || :
+
+.PHONY: obs-project
+obs-project:
+	mkdir -p -- $(OBSROOT)/$(OBSPROJECT)
+
+# -- make sure that we got some sort of string for a username from
+#    the $HOME/.oscrc before trying a bunch of OBS commands
+#
+.PHONY: obs-user-from-oscrc
+obs-user-from-oscrc:
+	test "" != "$(OBSUSER)"
+
+# -- build a new package in the project if it doesn't already exist
+#
+.PHONY: obs-new
+obs-new: obs-user-from-oscrc
+	osc meta pkg $(OBSPROJECT) $(PACKAGE) >/dev/null \
+	  || { printf "%s\n" \
+	      '<package project="$(OBSPROJECT)" name="$(PACKAGE)">' \
+	      '  <title>$(PACKAGE)</title>' \
+	      '  <description/>' \
+	      '  <person role="maintainer" userid="$(OBSUSER)"/>' \
+	      '  <person role="bugowner" userid="$(OBSUSER)"/>' \
+	      '  <url/>' \
+	      '</package>' \
+	        | osc meta pkg $(OBSPROJECT) $(PACKAGE) --create --file - ; }
+
+.PHONY: obs-checkout
+obs-checkout: obs-project
+	cd $(OBSROOT)/$(OBSPROJECT)/ \
+	  && osc checkout --current-dir -- $(OBSPROJECT) $(PACKAGE)
+
+.PHONY: obs-update
+obs-update:
+	( test -d $(OBSROOT)/$(OBSPROJECT)/$(PACKAGE)/ || $(MAKE) obs-checkout )
+	cd $(OBSROOT)/$(OBSPROJECT)/$(PACKAGE)/ && osc update
+
+.PHONY: obs-removeold
+obs-removeold:
+	find $(OBSROOT)/$(OBSPROJECT)/$(PACKAGE)/ \
+	  -mindepth 1 \
+	  -maxdepth 1 \
+	  -type f \
+	  -name '*.tar.gz' \
+	  -not -name '$(TARBALL).gz' \
+	  -print0 \
+	    | xargs --null --no-run-if-empty -- rm -v --
+
+.PHONY: obs-extractsrpm
+obs-extractsrpm: srpmlocaldist
+	rpm2cpio < ./dist/$(SRPM) \
+	    | ( cd $(OBSROOT)/$(OBSPROJECT)/$(PACKAGE)/ && cpio --extract --verbose --unconditional )
+
+.PHONY: obs-addremove
+obs-addremove:
+	cd $(OBSROOT)/$(OBSPROJECT)/$(PACKAGE)/ && osc addremove
+
+.PHONY: obs-commit
+obs-commit:
+	cd $(OBSROOT)/$(OBSPROJECT)/$(PACKAGE) \
+	  && osc commit -m "$(BUILD_USER)@$(BUILD_HOST) uploads $(PACKAGE)-$(VERSION) to $(OBSPROJECT)"
+
+.PHONY: obs
+obs: srpm obs-project obs-new obs-update obs-removeold obs-extractsrpm obs-addremove obs-commit
+
+.PHONY: test-obs testobs obstest obs-test
+test-obs testobs obstest obs-test:
+	$(MAKE) obs SCM_TYPE=test
+
+.PHONY: obs-dev obsdev
+obs-dev obsdev:
+	$(MAKE) obs OBSPROJECT=dev:internal
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 #                               generic build                               #
