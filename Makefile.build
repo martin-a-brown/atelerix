@@ -56,13 +56,10 @@ $(POD2MANS): %.1: %.pod
 
 .PHONY: build-clean
 build-clean:
-	rm -f $(SUBDATA) $(BUILT_FILES) $(MANPAGES) $(POD2MANS) $(RST2HTML)
-
-.PHONY: $(SUBDATA)-hook
-$(SUBDATA)-hook: $(SUBDATA)
+	rm -rf $(BUILT_FILES) $(MANPAGES) $(POD2MANS) $(CLEAN_FILES)
 
 .PHONY: build 
-build: $(SUBDATA)-hook $(BUILT_FILES) $(MANPAGES) $(POD2MANS) $(RST2HTML)
+build: $(SUBSCRIPT) $(SUBDATA) $(BUILT_FILES) $(MANPAGES) $(POD2MANS)
 
 .PHONY: tests
 tests: build
@@ -106,7 +103,6 @@ $(SUBDATA)-hook:
 #    'make testrpm'?  Just put filenames into the $(EXPORT_EXCL) file
 $(EXPORT_EXCL)::
 	touch $(EXPORT_EXCL)
-
 
 # -- The following Makefile variables are available to you here for
 #    controlling the destination directory of your installation.  The
