@@ -252,6 +252,10 @@ test-clean:
 	cd .. \
 	  && ( test ! -L "$(CURRENT_PACKAGE)" || rm -f -- "$(CURRENT_PACKAGE)/$(EXPORT_EXCL)" "$(CURRENT_PACKAGE)" )
 
+# -- There exists general dislike (amongst several people) that this
+#    'test-export' target mucks with directories above the $CWD.  That
+#    is generally considered bad behaviour
+#
 .PHONY: test-export
 test-export: builddir
 	cd .. \
