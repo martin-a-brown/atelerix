@@ -20,6 +20,9 @@ source code management system.
 %prep
 %setup -q
 
+%check
+make tests
+
 %build
 make build
 
@@ -29,6 +32,12 @@ make install DESTDIR=$RPM_BUILD_ROOT
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+# -- if you are sending along Python modules that you want system-installed
+#    you can use a setup.py and call distribute to get them in the right place
+#    then, you will probably want:
+# %files -f INSTALLED_FILES
+#
 
 %files
 %defattr(0644,root,root,0755)
@@ -41,6 +50,20 @@ rm -rf $RPM_BUILD_ROOT
 
 # %dir                   @PACKAGE_SHARE@
 # %dir                   @PACKAGE_CACHE@
+
+# -- subpackages are eminently possible; here's an example for creating
+#    nagios plugins, shippable as binary RPMS under the name $(PACKAGE)-nagios
+
+# %package nagios
+# Group: Application/System
+# Summary: nagios checks for your application
+# 
+# %description nagios
+# nagios checks for your application 
+# (subpackage Summary and %description are required.)
+# 
+# %files nagios
+# %attr(0755, root, root)       @NAGIOS_PLUGINS@/some-service-specific-nagios-check
 
 
 %changelog
