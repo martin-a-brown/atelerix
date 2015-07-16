@@ -49,12 +49,13 @@ Required software
 =================
   * make (tested with GNU make)
   * python (almost anything >= 1.5.2)
-  * the usal suite of coreutils (mkdir, install, rpm, rpm-build, rm, mv,
-    gzip, tar, ln, rmdir)
-  * a source control program: 
+  * the usal suite of coreutils (mkdir, install, rm, mv, gzip, tar, ln,
+    rmdir, id)
+  * rpm (rpm, rpmspec, rpmbuild); should work with any rpm-4.x or newer
+  * one of these source control programs:
       - git > 1.5.x; uses 'git-archive'
       - svn
-      - cvs
+      - hg
 
 
 Thanks
@@ -64,7 +65,11 @@ developed organically out of the experience of several different people using
 a variety of scripts in different environments.  Thanks are due to:
 
   * Renesys Corporation; where this was finally nurtured and assembled
-  * Jon Nelson; ideas from prior experience
+  * Jon Nelson; ideas from prior experience, OBS integration work.
+  * Greg Ward; corrections and many improvements to Makefile-fu.
+  * Eric Estabrooks; rpmspec fixes and mercurial beginnings.
+  * Many suggestions, minor fixes and one-liners from others, including Clint
+    Hepner, Paul Felix, David Schein, Stephen Ryan and Rob Bushell.
 
 Unnamed contributors abound.
 
@@ -87,6 +92,7 @@ Q: Why does the specfile.in say "License: empty", then?
 A: The example 'specfile.in' contains the rather unusual value 'empty' for
    the License field.  This is merely to emphasize that any software using the
    atelerix Makefile (and tools) should specify its own license in this field.
+   Consult your local intellectual property guru for advice.
 
 Q: How do I add a simple file?  For example, suppose I want to add a script
    that should end up in /usr/bin/frobnitz.
