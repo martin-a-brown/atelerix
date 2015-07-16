@@ -15,21 +15,21 @@
 
 # -- Determine working directory and a few other key variables.
 #
-SHELL      := /bin/bash
-DIRNAME    := $(shell echo $${PWD})
-DIRBASE    := $(shell basename $${PWD})
-SPECFILE   := specfile.in
-CMD        := rpm -q --specfile $(SPECFILE)
-PACKAGE    := $(shell $(CMD) --queryformat="%{NAME}\n" | head -n 1)
-VERSION    := $(shell $(CMD) --queryformat="%{VERSION}\n" | head -n 1)
-RPMDIST    := --define "_topdir $(DIRNAME)/build/"
-DATE       := $(shell date +%F)
-BUILD_HOST := $(shell hostname)
-BUILD_USER := $(shell id -un)
-SUBSCRIPT  := substitute.py
-BUILD_TYPE := conventional
-SUBDATA    := subdata.$(BUILD_TYPE)
-ENCLAVE    := atelerix
+SHELL           := /bin/bash
+DIRNAME         := $(abspath .)
+DIRBASE         := $(notdir $(DIRNAME))
+SPECFILE        := specfile.in
+CMD             := rpm -q --specfile $(SPECFILE)
+PACKAGE         := $(shell $(CMD) --queryformat="%{NAME}\n" | head -n 1)
+VERSION         := $(shell $(CMD) --queryformat="%{VERSION}\n" | head -n 1)
+RPMDIST         := --define "_topdir $(DIRNAME)/build/"
+DATE            := $(shell date +%F)
+BUILD_HOST      := $(shell hostname)
+BUILD_USER      := $(shell id -un)
+SUBSCRIPT       := substitute.py
+BUILD_TYPE      := conventional
+SUBDATA         := subdata.$(BUILD_TYPE)
+ENCLAVE         := atelerix
 
 export PACKAGE VERSION SPECFILE SUBSCRIPT SUBDATA
 
