@@ -212,7 +212,7 @@ test-clean:
 	  && rm "$(CURRENT_PACKAGE)"
 
 .PHONY: test-export
-test-export: builddir prepclean
+test-export: builddir
 	cd .. \
 	  && ln -snvf $(DIRBASE) $(CURRENT_PACKAGE) \
 	  && tar \
@@ -236,7 +236,7 @@ git-tag:
 	  $(CURRENT_PACKAGE)
 
 .PHONY: git-export
-git-export: builddir prepclean
+git-export: builddir
 	git-archive \
 	  --format=tar \
 	  --prefix=$(CURRENT_PACKAGE)/ \
@@ -249,25 +249,49 @@ git-export: builddir prepclean
 .PHONY: git-clean
 git-clean:
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+#                                   SVN                                     #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+
+# -- ugly shell maneuvering in most of the below to make "nice glue" between
+#    'svn' and 'make' which will interpret a non-zero exit as cause for
+#    aborting the sequence
+#
+
 .PHONY: svn-trunk-must-be-pwd
 svn-trunk-must-be-pwd:
-	test ../trunk/ -ef .
+	( test trunk == $(lastword $(subst /, ,$(SVN_PATH))) \
+	  || { printf >&2 "%s\n" "Working directory must be a ./trunk/ to branch/tag." ; exit 1 ; } )
+
+.PHONY: svn-branch-must-not-exist
+svn-branch-must-not-exist:
+	( svn ls $(SVN_PROJ)branches/$(BRANCHNAME) >/dev/null 2>&1 \
+	  && { printf >&2 "%s\n" "Branch for $(CURRENT_PACKAGE) already exists." ; exit 1 ; } || exit 0 )
 
 .PHONY: svn-tag-must-not-exist
 svn-tag-must-not-exist:
-	test ! -e ../tags/$(CURRENT_PACKAGE)
+	( svn ls $(SVN_PROJ)tags/$(CURRENT_PACKAGE) >/dev/null 2>&1 \
+	  && { printf >&2 "%s\n" "Tag for $(CURRENT_PACKAGE) already exists." ; exit 1 ; } || exit 0 )
 
-.PHONY: svn-update
-svn-update:
-	svn update
+.PHONY: svn-branch-make
+svn-branch-make: svn-branch-must-not-exist
+	svn cp $(SVN_PATH)/ $(SVN_PROJ)branches/$(BRANCHNAME) \
+	  -m "branch for $(CURRENT_PACKAGE)"
+
+.PHONY: svn-tag-make
+svn-tag-make: svn-tag-must-not-exist
+	svn cp $(SVN_PATH)/ $(SVN_PROJ)tags/$(CURRENT_PACKAGE) \
+	  -m "tag for $(CURRENT_PACKAGE)"
+
+.PHONY: svn-branch
+svn-branch: svn-branch-make
 
 .PHONY: svn-tag
-svn-tag: svn-trunk-must-be-pwd svn-tag-must-not-exist svn-update
-	svn cp ../trunk ../tags/$(CURRENT_PACKAGE) \
-	  && svn commit -m $(CURRENT_PACKAGE) ../tags/$(CURRENT_PACKAGE)
+svn-tag: svn-tag-make
 
 .PHONY: svn-export
-svn-export: builddir prepclean
+svn-export: builddir
 	cd ./build/ \
 	  && svn export $(SVN_PATH) $(CURRENT_PACKAGE)
 
@@ -281,10 +305,6 @@ builddir:
 .PHONY: distdir
 distdir:
 	mkdir -p ./dist
-
-.PHONY: prepclean
-prepclean:
-	rm -rf ./build/$(CURRENT_PACKAGE)*
 
 .PHONY: clean
 clean: build-clean
