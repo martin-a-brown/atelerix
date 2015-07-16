@@ -41,6 +41,12 @@ endif
 PACKAGE         := $(word 1, $(RPMINFO))
 VERSION         := $(word 2, $(RPMINFO))
 RELEASE         := $(word 3, $(RPMINFO))
+version_bits    := $(subst ., ,$(VERSION))
+MAJOR_VERSION   := $(word 1,$(version_bits))
+MAJOR_PACKAGE   := $(PACKAGE)-$(MAJOR_VERSION)
+MINOR_VERSION   := $(word 1,$(version_bits)).$(word 2,$(version_bits))
+MINOR_PACKAGE   := $(PACKAGE)-$(MINOR_VERSION)
+BRANCHNAME      := $(MINOR_PACKAGE)
 
 RPMDIST         := --define "_topdir $(DIRNAME)/build/"
 DATE            := $(shell date +%F)
