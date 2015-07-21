@@ -1,0 +1,11 @@
+[Unit]
+Description=@PACKAGE@ systemd service
+After=network.target
+
+[Service]
+User=gradus
+EnvironmentFile=-/etc/sysconfig/@PACKAGE@
+ExecStart=@PACKAGE_ROOT@/atelerix-script
+
+[Install]
+WantedBy=multi-user.target

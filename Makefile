@@ -126,10 +126,13 @@ MANDIR         := $(USRROOT)/share/man
 BINDIR         := $(USRROOT)/bin
 SBINDIR        := $(USRROOT)/sbin
 NAGIOS_PLUGINS := $(USRROOT)/lib/nagios/plugins
+SYSTEMD        := $(USRROOT)/lib/systemd/system
+SYSCONFIG      := $(ETC)/sysconfig
 
 export ROOT LIBEXEC SHARE MANDIR ETC BINDIR SBINDIR VAR NAGIOS_PLUGINS
 export PACKAGE_ROOT PACKAGE_SHARE PACKAGE_ETC PACKAGE_CACHE PACKAGE_SPOOL
 export PACKAGE_TMP DATE BUILD_HOST BUILD_USER
+export SYSTEMD SYSCONFIG
 
 # -- weirdo extras
 #
@@ -569,7 +572,9 @@ pkg-$(SUBDATA):
 	  SBINDIR        "$(SBINDIR)" \
 	  ETC            "$(ETC)" \
 	  VAR            "$(VAR)" \
-	  SHARE          "$(SHARE)"
+	  SHARE          "$(SHARE)"\
+	  SYSTEMD        "$(SYSTEMD)"\
+	  SYSCONFIG      "$(SYSCONFIG)"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 #                    user-controlled per package stuff                      #
