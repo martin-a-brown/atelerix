@@ -2,7 +2,7 @@
 #    It only requires two externally visible targets, "build"
 #    and "install", which will be called from the "Makefile"
 #    by the RPM build process.
-# # -- For a listing of paths (and their usual values), see the bottom
+# -- For a listing of paths (and their usual values), see the bottom
 #    of this template (and feel free to remove the boilerplate).
 #
 # -- The following path variables are available at both build
@@ -77,13 +77,13 @@ install: build
 	#
 	# -- install systemd unit file into /usr/lib/systemd/system
 	#
-	#  mkdir -p								$(DESTDIR)$(SYSTEMD)
-	#  install -m 0644 frobnitz.service 	$(DESTDIR)$(SYSTEMD)
+	#  mkdir -p                          $(DESTDIR)$(SYSTEMD)
+	#  install -m 0644 frobnitz.service  $(DESTDIR)$(SYSTEMD)
 	#
 	# -- install sysconfig unit file into /etc/sysconfig
 	#
-	#  mkdir -p					$(DESTDIR)$(SYSCONFIG)
-	#  install -m 0644 frobnitz $(DESTDIR)$(SYSCONFIG)
+	#  mkdir -p                   $(DESTDIR)$(SYSCONFIG)
+	#  install -m 0644 frobnitz   $(DESTDIR)$(SYSCONFIG)
 	#
 	# -- This packaging system CAN work with Python, if you like...
 	#
