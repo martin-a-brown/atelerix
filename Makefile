@@ -573,8 +573,8 @@ pkg-$(SUBDATA):
 	  ETC            "$(ETC)" \
 	  VAR            "$(VAR)" \
 	  SHARE          "$(SHARE)"\
-	  SYSTEMD		 "$(SYSTEMD)"\
-	  SYSCONFIG		 "$(SYSCONFIG)"
+	  SYSTEMD        "$(SYSTEMD)"\
+	  SYSCONFIG      "$(SYSCONFIG)"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 #                    user-controlled per package stuff                      #
