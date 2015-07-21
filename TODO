@@ -1,0 +1,7 @@
+TODO
+----
+  * improve the smoothness of atelerix when used with git
+  * make it so the Makefile can live permanently in a place like 
+    /usr/lib/atelerix/Makefile.atelerix (credit for idea: gward)
+  * create testing tools to make sure there's no retrogression
+  * build a set of demonstrative and illustrative sample packages
