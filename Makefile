@@ -93,9 +93,12 @@ export PACKAGE VERSION SPECFILE SUBSCRIPT SUBDATA ENCLAVE
 # ENCLAVE:  Name of the class of package, e.g. 'renesys', 'atelerix'
 # SUBSCRIPT:  The equivalent of 'sed -e' using the subdata file.
 # SUBDATA:  The name of the file containing the substitution data.
-# SCM_TYPE:  By default, 'svn' inside Renesys.
-# CURRENT_PACKAGE:  For tarball, dir, branch and tag naming, for example:
-#                   frobnitz-0.4.2.
+# SCM_TYPE:  Guessed by the presence of an .svn, .git or .hg directory in $PWD
+#            can be specified, e.g. SCM_TYPE=test for working directory builds
+# CURRENT_PACKAGE:  Full name of package and version, used for tarball, dir,
+#                   branch and tag naming, for example: frobnitz-1.4.2.7.
+# MAJOR_VERSION:  Similar; only first component of version, e.g. frobnitz-1
+# MINOR_VERSION:  Similar; only first two components, e.g. frobnitz-1.4
 # TARBALL:  Name of the tarball (without path).
 # BUILD_MAKEFILE:  The well-known name of the Makefile.build.
 # OBSPROJECT:  Which OBS project to use as upload target for the package.
@@ -168,16 +171,10 @@ else ifeq ($(SCM_TYPE),git)
   GIT_ID          := remotes/svn/$(CURRENT_PACKAGE)
 endif
 
-# -- Notes on SCM/VCS variables
-#
-# SVN_PATH:  Full svn checkout path.
-# GIT_ID:  Any "tree-ish" thing that you want to refer to.  For tagging and
-#          branching and building from the git repo.
-
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 #                                                                           #
-#        end of preamble for package building out of git/svn/hg             #
+#        end of preamble for variable guessing and assignment               #
 #                                                                           #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
@@ -501,8 +498,6 @@ clean-distdir: clean $(SCM_TYPE)-clean
 .PHONY: distclean
 distclean: obs-clean clean-builddir clean-distdir test-clean
 
-# -- our own recursively called targets
-#
 .PHONY: specfile
 specfile: $(SUBSCRIPT) $(SUBDATA) $(SPECFILE)
 	python $(SUBSCRIPT) $(SUBDATA) < $(SPECFILE) > $(PACKAGE).spec
