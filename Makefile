@@ -208,7 +208,7 @@ srpmlocaldist: distdir buildsrpm
 	mv --verbose \
 	    --target-directory ./dist/ \
 	    build/$(PACKAGE)-$(VERSION)/$(PACKAGE).spec \
-	    build/SRPMS/$(TARBALL).gz \
+	    build/$(TARBALL).gz \
 	    build/SRPMS/$(SRPM)
 
 .PHONY: buildsrpm
