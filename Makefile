@@ -246,26 +246,19 @@ test-tag:
 
 .PHONY: test-clean
 test-clean:
-	cd .. \
-	  && ( test ! -L "$(CURRENT_PACKAGE)" || rm -f -- "$(CURRENT_PACKAGE)/$(EXPORT_EXCL)" "$(CURRENT_PACKAGE)" )
+	( test ! -L "$(CURRENT_PACKAGE)" || rm -f -- "$(CURRENT_PACKAGE)/$(EXPORT_EXCL)" "$(CURRENT_PACKAGE)" )
 
 .PHONY: test-linkname
 test-linkname:
-	cd .. \
-	  && ( test -e "$(CURRENT_PACKAGE)" || ln -snvf -- "$(DIRBASE)" "$(CURRENT_PACKAGE)" )
+	( test -e "$(CURRENT_PACKAGE)" || ln -snvf -- . "$(CURRENT_PACKAGE)" )
 
 .PHONY: test-linkname-must-be-pwd
 test-linkname-must-be-pwd:
-	test ../$(CURRENT_PACKAGE)/ -ef .
+	test $(CURRENT_PACKAGE)/ -ef .
 
-# -- There exists general dislike (amongst several people) that this
-#    'test-export' target mucks with directories above the $CWD.  That
-#    is generally considered bad behaviour
-#
 .PHONY: test-export
 test-export: builddir test-linkname test-linkname-must-be-pwd $(EXPORT_EXCL)
-	cd .. \
-	  && tar \
+	tar \
 	    --create \
 	    --dereference \
 	    --to-stdout \
@@ -273,6 +266,7 @@ test-export: builddir test-linkname test-linkname-must-be-pwd $(EXPORT_EXCL)
 	    --exclude "*.git*" \
 	    --exclude "*.svn*" \
 	    --exclude "*.hg*" \
+	    --exclude "$(CURRENT_PACKAGE)/$(CURRENT_PACKAGE)" \
 	    --exclude "$(CURRENT_PACKAGE)/obs/*" \
 	    --exclude "$(CURRENT_PACKAGE)/dist/*" \
 	    --exclude "$(CURRENT_PACKAGE)/build/*" \
