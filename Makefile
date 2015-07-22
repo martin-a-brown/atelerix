@@ -188,14 +188,11 @@ endif
 test-rpm testrpm rpm-test rpmtest:
 	$(MAKE) rpm SCM_TYPE=test
 
-.PHONY: rpm
-rpm: rpmlocaldist clean-builddir
+.PHONY: rpm rpms
+rpm rpms: rpmlocaldist clean-builddir
 
 .PHONY: srpm
 srpm: srpmlocaldist clean-builddir
-
-.PHONY: rpms
-rpms: rpm
 
 .PHONY: rpmlocaldist
 rpmlocaldist: distdir buildrpm
@@ -353,21 +350,15 @@ svn-tag-must-not-exist:
 	( svn ls $(SVN_PROJ)tags/$(CURRENT_PACKAGE) >/dev/null 2>&1 \
 	  && { printf >&2 "%s\n" "Tag for $(CURRENT_PACKAGE) already exists." ; exit 1 ; } || exit 0 )
 
-.PHONY: svn-branch-make
-svn-branch-make: svn-branch-must-not-exist
+.PHONY: svn-branch-make svn-branch
+svn-branch-make svn-branch: svn-branch-must-not-exist
 	svn cp $(SVN_PATH)/ $(SVN_PROJ)branches/$(BRANCHNAME) \
 	  -m "branch for $(CURRENT_PACKAGE)"
 
-.PHONY: svn-tag-make
-svn-tag-make: svn-tag-must-not-exist
+.PHONY: svn-tag-make svn-tag
+svn-tag-make svn-tag: svn-tag-must-not-exist
 	svn cp $(SVN_PATH)/ $(SVN_PROJ)tags/$(CURRENT_PACKAGE) \
 	  -m "tag for $(CURRENT_PACKAGE)"
-
-.PHONY: svn-branch
-svn-branch: svn-branch-make
-
-.PHONY: svn-tag
-svn-tag: svn-tag-make
 
 .PHONY: svn-export
 svn-export: builddir
@@ -467,11 +458,8 @@ branch: $(SCM_TYPE)-branch
 .PHONY: tag
 tag: $(SCM_TYPE)-tag
 
-.PHONY: clean
-clean: $(SUBDATA) build-clean pkg-clean
-
-.PHONY: mrclean
-mrclean: clean
+.PHONY: clean mrclean
+clean mrclean: $(SUBDATA) build-clean pkg-clean
 
 .PHONY: pkg-clean
 pkg-clean:
