@@ -60,7 +60,6 @@ SCM_TYPE        := $(shell test -e .svn && echo svn || { test -e .git && echo gi
 CURRENT_PACKAGE := $(PACKAGE)-$(VERSION)
 TARBALL         := $(CURRENT_PACKAGE).tar
 SRPM            := $(PACKAGE)-$(VERSION)-$(RELEASE).src.rpm
-BUILD_MAKEFILE  := Makefile.build
 OSCRC           := $(shell echo $$HOME/.oscrc )
 OBSUSER         := $(shell python -c 'import ConfigParser, sys; c = ConfigParser.ConfigParser(); c.read(sys.argv[1]) or sys.exit("Could not read " + sys.argv[1] + ", ignoring."); print c.get(c.get("general", "apiurl"), "user")' $(OSCRC) )
 OBSPROJECT      := home:$(OBSUSER)
@@ -100,7 +99,6 @@ export PACKAGE VERSION SPECFILE SUBSCRIPT SUBDATA ENCLAVE
 # MAJOR_VERSION:  Similar; only first component of version, e.g. frobnitz-1
 # MINOR_VERSION:  Similar; only first two components, e.g. frobnitz-1.4
 # TARBALL:  Name of the tarball (without path).
-# BUILD_MAKEFILE:  The well-known name of the Makefile.build.
 # OBSPROJECT:  Which OBS project to use as upload target for the package.
 # OSCRC:  Configuration file which contains OBS username.
 # OBSUSER:  Username to put in meta-information for the package.
@@ -561,12 +559,6 @@ pkg-$(SUBDATA):
 	  SHARE          "$(SHARE)"\
 	  SYSTEMD        "$(SYSTEMD)"\
 	  SYSCONFIG      "$(SYSCONFIG)"
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-#                    user-controlled per package stuff                      #
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-
-include $(BUILD_MAKEFILE)
 
 # -- documentation target(s)
 #
