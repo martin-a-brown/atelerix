@@ -66,6 +66,7 @@ install: build
 	#
 	mkdir -p                         $(DESTDIR)$(PACKAGE_ROOT)
 	install -m 0755 atelerix-script  $(DESTDIR)$(PACKAGE_ROOT)
+	install -m 0644 atelerix.mk      $(DESTDIR)$(PACKAGE_ROOT)
 	#
 	# -- install config files into /etc/atelerix/$(PACKAGE)
 	#

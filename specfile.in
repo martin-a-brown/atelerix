@@ -47,6 +47,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace)     @PACKAGE_ETC@/main.conf
 %dir                   @PACKAGE_ROOT@
 %attr(755, root, root) @PACKAGE_ROOT@/atelerix-script
+                       @PACKAGE_ROOT@/atelerix.mk
 
 # %dir                   @PACKAGE_SHARE@
 # %dir                   @PACKAGE_CACHE@
