@@ -1,10 +1,11 @@
 README for atelerix
 ===================
 Atelerix simplifies building an RPM directly from a version control system.
-It is most useful when the contents are mostly scripts (or other non-compiled
-content).  One useful feature is its ability to drive package building
-directly from tags in a version control system (git, svn, cvs).  It is relased
-under the BSD license.
+It is a Makefile (named atelerix.mk), which you can include in your Makefile
+and can be used for RPM-packaging just about anything (shell scripts, Python,
+Perl, C, Java, and more).  One useful feature is its ability to drive package
+building directly from tags in a version control system (git, svn, hg).  It
+is relased under the BSD license.
 
 
 Example workflow
@@ -23,22 +24,22 @@ There is now a package called ./dist/frobnitz-$VERSION-1.noarch.rpm.
 What should I already know
 ==========================
 You should have a basic understanding of a Makefile.  You will put your own
-"build" and "install" commands in the Makefile.build.  This puts your software
-into a temporary directory similar to where it will live in the package.
+"build" and "install" commands in your Makefile.
 
 You should know the basics of an RPM specfile.  Learn how to write the 
 %files section at absolute least.
 
+Your Makefile needs only to 'include /usr/lib/atelerix/atelerix.mk'.
 
 
 How does it work
 ================
 The Makefile has all of the logic for creating the package and interacting
-with the version control system (VCS, a.k.a. SCM in this text).
+with the version control system (VCS), a.k.a. source control management (SCM).
 
-The specfile.in describes the RPM.
+The specfile.in describes the files belonging to the RPM.
 
-The Makefile.build has the rules for putting the files into the correct
+The Makefile has the rules for putting the files into the correct
 locations (in a buildroot/DESTDIR).
 
 
@@ -102,7 +103,7 @@ A: This involves several steps (continuing from above frobnitz example
      1. add the file to the directory (and your VCS)
      2. add the file to the %files specfile listing
           %attr(755, root, root) @BINDIR@/frobnitz
-     3. add a section to the 'install' target of Makefile.build
+     3. add a section to the 'install' target of Makefile
           mkdir -p $(DESTDIR)$(BINDIR)
           install -m 0755 frobnitz $(DESTDIR)$(BINDIR)
      4. run "make test-rpm"
