@@ -33,7 +33,7 @@ POD2MANS    :=
 #
 TESTARGS :=
 
-# -- Do you need custom variables of your own in the Makefile.build and
+# -- Do you need custom variables of your own in your package to be
 #    replaced inline in the code?  See how MY_VARIABLE is added to the
 #    substitution script data in $(SUBDATA)-hook below.  The variable
 #    can be used just like @PACKAGE_ETC@ in your .in files.
