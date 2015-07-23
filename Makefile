@@ -569,8 +569,8 @@ include $(BUILD_MAKEFILE)
 .PHONY: help
 help:
 	@printf "%s\n" \
-	"Makefile for atelerix-based packages" \
-	"--------------------------------------" \
+	"Makefile for atelerix-based packages (SCM guessed is $(SCM_TYPE))" \
+	"---------------------------------------------------------" \
 	"" \
 	"make" \
 	"make build" \
