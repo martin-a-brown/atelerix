@@ -180,14 +180,9 @@ endif
 
 .SUFFIXES:
 
-
-# -- the "rpm" target will build out of the SCM, but will leave
-#    the resulting package in the relative ./dist/ directory
+# -- the "rpm" target will build out of the SCM and will leave
+#    the resulting package(s) in the ./dist/ directory
 #
-.PHONY: test-rpm testrpm rpm-test rpmtest
-test-rpm testrpm rpm-test rpmtest:
-	$(MAKE) rpm SCM_TYPE=test
-
 .PHONY: rpm rpms
 rpm rpms: rpmlocaldist clean-builddir
 
@@ -435,6 +430,14 @@ obs-commit:
 
 .PHONY: obs
 obs: srpm obs-project obs-new obs-update obs-removeold obs-extractsrpm obs-addremove obs-commit
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+#      The Synonym Courtyard: convenience targets for less typing           #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+.PHONY: test-rpm testrpm rpm-test rpmtest
+test-rpm testrpm rpm-test rpmtest:
+	$(MAKE) rpm SCM_TYPE=test
 
 .PHONY: test-obs testobs obstest obs-test
 test-obs testobs obstest obs-test:
