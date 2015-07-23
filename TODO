@@ -1,7 +1,13 @@
 TODO
-----
-  * improve the smoothness of atelerix when used with git
+-------
+  * create testing tools to make sure there's no future retrogression
+  * build a set of illustrative sample packages demonstrating sub-packages 
+    and other nifty features.
+
+DONE
+-------
   * make it so the Makefile can live permanently in a place like 
     /usr/lib/atelerix/Makefile.atelerix (credit for idea: gward)
-  * create testing tools to make sure there's no retrogression
-  * build a set of demonstrative and illustrative sample packages
+    Implemented 2015-07-23, atelerix-0.3.0 (MAB)
+  * improve the smoothness of atelerix when used with git
+    Implemented 2015-07-23, atelerix-0.2.17 (MAB)
