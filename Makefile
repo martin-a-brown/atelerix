@@ -62,7 +62,7 @@ TARBALL         := $(CURRENT_PACKAGE).tar
 SRPM            := $(PACKAGE)-$(VERSION)-$(RELEASE).src.rpm
 BUILD_MAKEFILE  := Makefile.build
 OSCRC           := $(shell echo $$HOME/.oscrc )
-OBSUSER         := $(shell python -c 'import ConfigParser, sys; c = ConfigParser.ConfigParser(); c.read(sys.argv[1]) or sys.exit("error reading " + sys.argv[1]); print c.get(c.get("general", "apiurl"), "user")' $(OSCRC) )
+OBSUSER         := $(shell python -c 'import ConfigParser, sys; c = ConfigParser.ConfigParser(); c.read(sys.argv[1]) or sys.exit("Could not read " + sys.argv[1] + ", ignoring."); print c.get(c.get("general", "apiurl"), "user")' $(OSCRC) )
 OBSPROJECT      := home:$(OBSUSER)
 OBSDEFROOT      := ./obs
 OBSROOT         := ./obs
