@@ -16,7 +16,7 @@ ATX         := $(shell ls 2>/dev/null $(ATELERIX_MK))
 ifeq ($(ATX),)
   $(error Could not find atelerix in $(ATELERIX_MK))
 else
-  include $(ATX)
+  include $(firstword $(ATX))
 endif
 
 DESTDIR := /
