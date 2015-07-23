@@ -280,17 +280,15 @@ test-export: builddir test-linkname test-linkname-must-be-pwd $(EXPORT_EXCL)
 #                                   git                                     #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
-.PHONY: git-tag
-git-tag:
-	git tag \
-	  -a -m $(CURRENT_PACKAGE) \
-	  $(CURRENT_PACKAGE)
+.PHONY: git-tag-make git-tag
+git-tag-make git-tag:
+	git tag -a -m "$(CURRENT_PACKAGE)" "$(CURRENT_PACKAGE)"
 
 .PHONY: git-export
 git-export: builddir
 	git archive \
-	  --format=tar \
-	  --prefix=$(CURRENT_PACKAGE)/ \
+	  --format tar \
+	  --prefix $(CURRENT_PACKAGE)/ \
 	  $(GIT_ID) \
 	  | tar \
 	    --extract \
