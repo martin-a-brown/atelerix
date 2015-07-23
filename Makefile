@@ -275,12 +275,12 @@ test-export: builddir test-linkname test-linkname-must-be-pwd $(EXPORT_EXCL)
 #                                   git                                     #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
-.PHONY: git-tag-make git-tag
-git-tag-make git-tag:
+.PHONY: git-tag-create git-tag
+git-tag-create git-tag:
 	git tag -a -m "$(CURRENT_PACKAGE)" "$(CURRENT_PACKAGE)"
 
-.PHONY: git-branch-make git-branch
-git-branch-make git-branch:
+.PHONY: git-branch-create git-branch
+git-branch-create git-branch:
 	git branch "$(CURRENT_PACKAGE)"
 
 .PHONY: git-export
@@ -341,13 +341,13 @@ svn-tag-must-not-exist:
 	( svn ls $(SVN_PROJ)tags/$(CURRENT_PACKAGE) >/dev/null 2>&1 \
 	  && { printf >&2 "%s\n" "Tag for $(CURRENT_PACKAGE) already exists." ; exit 1 ; } || exit 0 )
 
-.PHONY: svn-branch-make svn-branch
-svn-branch-make svn-branch: svn-branch-must-not-exist
+.PHONY: svn-branch-create svn-branch
+svn-branch-create svn-branch: svn-branch-must-not-exist
 	svn cp $(SVN_PATH)/ $(SVN_PROJ)branches/$(BRANCHNAME) \
 	  -m "branch for $(CURRENT_PACKAGE)"
 
-.PHONY: svn-tag-make svn-tag
-svn-tag-make svn-tag: svn-tag-must-not-exist
+.PHONY: svn-tag-create svn-tag
+svn-tag-create svn-tag: svn-tag-must-not-exist
 	svn cp $(SVN_PATH)/ $(SVN_PROJ)tags/$(CURRENT_PACKAGE) \
 	  -m "tag for $(CURRENT_PACKAGE)"
 
