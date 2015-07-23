@@ -11,8 +11,13 @@
 #    (They will be in our environment, but may as well not
 #    rely on that.)
 #
-
-include /usr/lib/atelerix/atelerix.mk
+ATELERIX_MK := atelerix.mk /usr/lib/atelerix/atelerix.mk
+ATX         := $(shell ls 2>/dev/null $(ATELERIX_MK))
+ifeq ($(ATX),)
+  $(error Could not find atelerix in $(ATELERIX_MK))
+else
+  include $(ATX)
+endif
 
 DESTDIR := /
 
