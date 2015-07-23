@@ -12,6 +12,8 @@
 #    rely on that.)
 #
 
+include /usr/lib/atelerix/atelerix.mk
+
 DESTDIR := /
 
 default: build
