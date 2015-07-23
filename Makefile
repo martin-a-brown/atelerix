@@ -284,6 +284,10 @@ test-export: builddir test-linkname test-linkname-must-be-pwd $(EXPORT_EXCL)
 git-tag-make git-tag:
 	git tag -a -m "$(CURRENT_PACKAGE)" "$(CURRENT_PACKAGE)"
 
+.PHONY: git-branch-make git-branch
+git-branch-make git-branch:
+	git branch "$(CURRENT_PACKAGE)"
+
 .PHONY: git-export
 git-export: builddir
 	git archive \
