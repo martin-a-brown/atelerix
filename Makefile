@@ -168,7 +168,7 @@ ifeq ($(SCM_TYPE),svn)
     $(shell sleep 2)
   endif
 else ifeq ($(SCM_TYPE),git)
-  GIT_ID          := remotes/svn/$(CURRENT_PACKAGE)
+  GIT_ID          := HEAD
 endif
 
 
