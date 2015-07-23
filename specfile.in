@@ -1,5 +1,5 @@
 Name:           atelerix
-Version:        0.2.19
+Version:        0.2.20
 Release:        1
 Summary:        A simple atelerix example package.
 
@@ -68,6 +68,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jul 23 2015 Martin A. Brown <martin@linux-ip.net> [0.2.20]
+  - adding better git targets for using atelerix with git
+  - inverting the Makefile/Makefile.build inclusion order (atelerix.mk)
+
 * Wed Jul 22 2015 Martin A. Brown <martin@linux-ip.net> [0.2.15]
   - incorporating all patches from Renesys years
   - improving documentation and moving to its own directory
