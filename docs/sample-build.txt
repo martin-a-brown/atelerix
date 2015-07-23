@@ -4,13 +4,11 @@ rm -rf -- ./dist/
 mkdir -p ./dist
 rm -rf -- ./build/
 mkdir -p -- ./build/{SPECS,SOURCES,RPMS,SRPMS,BUILD}
-cd .. \
-  && ( test -e "atelerix-0.2.14" || ln -snvf -- "atelerix" "atelerix-0.2.14" )
-‘atelerix-0.2.14’ -> ‘atelerix’
-test ../atelerix-0.2.14/ -ef .
+( test -e "atelerix-0.2.21" || ln -snvf -- . "atelerix-0.2.21" )
+‘atelerix-0.2.21’ -> ‘.’
+test atelerix-0.2.21/ -ef .
 touch .extra-test-build-excludes
-cd .. \
-  && tar \
+tar \
     --create \
     --dereference \
     --to-stdout \
@@ -18,141 +16,147 @@ cd .. \
     --exclude "*.git*" \
     --exclude "*.svn*" \
     --exclude "*.hg*" \
-    --exclude "atelerix-0.2.14/obs/*" \
-    --exclude "atelerix-0.2.14/dist/*" \
-    --exclude "atelerix-0.2.14/build/*" \
-      atelerix-0.2.14 \
+    --exclude "atelerix-0.2.21/atelerix-0.2.21" \
+    --exclude "atelerix-0.2.21/obs/*" \
+    --exclude "atelerix-0.2.21/dist/*" \
+    --exclude "atelerix-0.2.21/build/*" \
+      atelerix-0.2.21 \
   | tar \
     --extract \
-    --directory atelerix-0.2.14/build/ \
+    --directory atelerix-0.2.21/build/ \
     --file -
-cd ./build/atelerix-0.2.14 \
+cd ./build/atelerix-0.2.21 \
   && make specfile
-make[2]: Entering directory '/home/mabrown/vcs/atelerix/build/atelerix-0.2.14'
+make[2]: Entering directory '/home/mabrown/vcs/atelerix/build/atelerix-0.2.21'
 python substitute.py atelerix.subdata < specfile.in > atelerix.spec
-make[2]: Leaving directory '/home/mabrown/vcs/atelerix/build/atelerix-0.2.14'
+make[2]: Leaving directory '/home/mabrown/vcs/atelerix/build/atelerix-0.2.21'
 tar \
   --create \
   --directory ./build/ \
-  --file      ./build/atelerix-0.2.14.tar \
-  atelerix-0.2.14
-gzip -c < ./build/atelerix-0.2.14.tar > ./build/atelerix-0.2.14.tar.gz
-rpmbuild --define "_topdir /home/mabrown/vcs/atelerix/build/" -ta ./build/atelerix-0.2.14.tar.gz
-Executing(%prep): /bin/sh -e /var/tmp/rpm-tmp.6UFhmD
+  --file      ./build/atelerix-0.2.21.tar \
+  atelerix-0.2.21
+gzip -c < ./build/atelerix-0.2.21.tar > ./build/atelerix-0.2.21.tar.gz
+rpmbuild --define "_topdir /home/mabrown/vcs/atelerix/build/" -ta ./build/atelerix-0.2.21.tar.gz
+Executing(%prep): /bin/sh -e /var/tmp/rpm-tmp.QvENnp
 + umask 022
 + cd /home/mabrown/vcs/atelerix/build//BUILD
 + cd /home/mabrown/vcs/atelerix/build/BUILD
-+ rm -rf atelerix-0.2.14
-+ /usr/bin/gzip -dc /home/mabrown/vcs/atelerix/build/atelerix-0.2.14.tar.gz
++ rm -rf atelerix-0.2.21
++ /usr/bin/gzip -dc /home/mabrown/vcs/atelerix/build/atelerix-0.2.21.tar.gz
 + /bin/tar -xf -
 + STATUS=0
 + '[' 0 -ne 0 ']'
-+ cd atelerix-0.2.14
++ cd atelerix-0.2.21
 + /usr/bin/chmod -Rf a+rX,u+w,g-w,o-w .
 + exit 0
-Executing(%build): /bin/sh -e /var/tmp/rpm-tmp.8t6bkM
+Executing(%build): /bin/sh -e /var/tmp/rpm-tmp.BIJKZA
 + umask 022
 + cd /home/mabrown/vcs/atelerix/build//BUILD
-+ /usr/bin/rm -rf /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64
-++ dirname /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64
++ /usr/bin/rm -rf /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64
+++ dirname /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64
 + /usr/bin/mkdir -p /home/mabrown/vcs/atelerix/build/BUILDROOT
-+ /usr/bin/mkdir /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64
-+ cd atelerix-0.2.14
++ /usr/bin/mkdir /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64
++ cd atelerix-0.2.21
 + make build
-make[2]: Entering directory '/home/mabrown/vcs/atelerix/build/BUILD/atelerix-0.2.14'
+make[2]: Entering directory '/home/mabrown/vcs/atelerix/build/BUILD/atelerix-0.2.21'
 python substitute.py atelerix.subdata < atelerix-script.in > atelerix-script
 python substitute.py atelerix.subdata < main.conf.in > main.conf
-python substitute.py atelerix.subdata < start.in > start
-python substitute.py atelerix.subdata < renserv.cfg.in > renserv.cfg
-make[2]: Leaving directory '/home/mabrown/vcs/atelerix/build/BUILD/atelerix-0.2.14'
+make[2]: Leaving directory '/home/mabrown/vcs/atelerix/build/BUILD/atelerix-0.2.21'
 + exit 0
-Executing(%install): /bin/sh -e /var/tmp/rpm-tmp.O5ntyV
+Executing(%install): /bin/sh -e /var/tmp/rpm-tmp.m6HPOM
 + umask 022
 + cd /home/mabrown/vcs/atelerix/build//BUILD
-+ cd atelerix-0.2.14
-+ rm -rf /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64
-+ make install DESTDIR=/home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64
-make[2]: Entering directory '/home/mabrown/vcs/atelerix/build/BUILD/atelerix-0.2.14'
++ cd atelerix-0.2.21
++ rm -rf /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64
++ make install DESTDIR=/home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64
+make[2]: Entering directory '/home/mabrown/vcs/atelerix/build/BUILD/atelerix-0.2.21'
 python substitute.py atelerix.subdata < atelerix-script.in > atelerix-script
 python substitute.py atelerix.subdata < main.conf.in > main.conf
-python substitute.py atelerix.subdata < start.in > start
-python substitute.py atelerix.subdata < renserv.cfg.in > renserv.cfg
 # -- put things into /usr/lib/atelerix
 #
-mkdir -p                         /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64/usr/lib/atelerix
-install -m 0755 atelerix-script  /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64/usr/lib/atelerix
+mkdir -p                         /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/lib/atelerix
+install -m 0755 atelerix-script  /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/lib/atelerix
+install -m 0644 atelerix.mk      /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/lib/atelerix
 #
-# -- install config files into /etc/atelerix/ACKAGE
+# -- install config files into /etc/atelerix/atelerix
 #
-mkdir -p                  /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64/etc/atelerix/atelerix
-install -m 0644 main.conf /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64/etc/atelerix/atelerix
+mkdir -p                  /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/etc/atelerix/atelerix
+install -m 0644 main.conf /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/etc/atelerix/atelerix
 #
-# -- install the example service configuration file for renserv
+# -- install any data files into /usr/share/atelerix
 #
-# mkdir -p                  /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64/usr/share/atelerix
-# install -m 0644 something /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64/usr/share/atelerix
+# mkdir -p                  /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/share/atelerix
+# install -m 0644 something /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/share/atelerix
+#
+# -- install systemd unit file into /usr/lib/systemd/system
+#
+#  mkdir -p                          /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/lib/systemd/system
+#  install -m 0644 frobnitz.service  /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/lib/systemd/system
+#
+# -- install sysconfig unit file into /etc/sysconfig
+#
+#  mkdir -p                   /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/etc/sysconfig
+#  install -m 0644 frobnitz   /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/etc/sysconfig
 #
 # -- This packaging system CAN work with Python, if you like...
-# -- Have Python drop its bits (modules, etc.) into the /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64 and
+#
+# -- Have Python drop its bits (modules, etc.) into the /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64 and
 #    keep track of what it put in there... then use %files -f INSTALLED_FILES
 #    in your specfile.in
 #
-#python setup.py install -O1 --root=/home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64 --record=INSTALLED_FILES
+#python setup.py install -O1 --root=/home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64 --record=INSTALLED_FILES
 #
-make[2]: Leaving directory '/home/mabrown/vcs/atelerix/build/BUILD/atelerix-0.2.14'
+make[2]: Leaving directory '/home/mabrown/vcs/atelerix/build/BUILD/atelerix-0.2.21'
 + /usr/lib/rpm/brp-compress
 + /usr/lib/rpm/brp-suse
-Executing(%check): /bin/sh -e /var/tmp/rpm-tmp.3iQB74
+Executing(%check): /bin/sh -e /var/tmp/rpm-tmp.IR8iXY
 + umask 022
 + cd /home/mabrown/vcs/atelerix/build//BUILD
-+ cd atelerix-0.2.14
++ cd atelerix-0.2.21
 + make tests
-make[2]: Entering directory '/home/mabrown/vcs/atelerix/build/BUILD/atelerix-0.2.14'
+make[2]: Entering directory '/home/mabrown/vcs/atelerix/build/BUILD/atelerix-0.2.21'
 python substitute.py atelerix.subdata < atelerix-script.in > atelerix-script
 python substitute.py atelerix.subdata < main.conf.in > main.conf
-python substitute.py atelerix.subdata < start.in > start
-python substitute.py atelerix.subdata < renserv.cfg.in > renserv.cfg
 ./test.sh 
-make[2]: Leaving directory '/home/mabrown/vcs/atelerix/build/BUILD/atelerix-0.2.14'
+make[2]: Leaving directory '/home/mabrown/vcs/atelerix/build/BUILD/atelerix-0.2.21'
 + exit 0
-Processing files: atelerix-0.2.14-1.noarch
-Executing(%doc): /bin/sh -e /var/tmp/rpm-tmp.oWqjXe
+Processing files: atelerix-0.2.21-1.noarch
+Executing(%doc): /bin/sh -e /var/tmp/rpm-tmp.LhbBib
 + umask 022
 + cd /home/mabrown/vcs/atelerix/build//BUILD
-+ cd atelerix-0.2.14
-+ DOCDIR=/home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64/usr/share/doc/packages/atelerix
++ cd atelerix-0.2.21
++ DOCDIR=/home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/share/doc/packages/atelerix
 + export DOCDIR
-+ /usr/bin/mkdir -p /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64/usr/share/doc/packages/atelerix
-+ cp -pr README /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64/usr/share/doc/packages/atelerix
-+ cp -pr RELEASE-NOTES /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64/usr/share/doc/packages/atelerix
-+ cp -pr README.FAQ /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64/usr/share/doc/packages/atelerix
-+ cp -pr PACKAGING-HOWTO.rst /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64/usr/share/doc/packages/atelerix
++ /usr/bin/mkdir -p /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/share/doc/packages/atelerix
++ cp -pr README /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/share/doc/packages/atelerix
++ cp -pr RELEASE-NOTES /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/share/doc/packages/atelerix
++ cp -pr docs/README.FAQ /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/share/doc/packages/atelerix
++ cp -pr docs/PACKAGING-HOWTO.rst /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64/usr/share/doc/packages/atelerix
 + exit 0
-Provides: atelerix = 0.2.14-1 config(atelerix) = 0.2.14-1
+Provides: atelerix = 0.2.21-1 config(atelerix) = 0.2.21-1
 Requires(rpmlib): rpmlib(CompressedFileNames) <= 3.0.4-1 rpmlib(PayloadFilesHavePrefix) <= 4.0-1
 Requires: /bin/bash
-Checking for unpackaged file(s): /usr/lib/rpm/check-files /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64
-Wrote: /home/mabrown/vcs/atelerix/build/SRPMS/atelerix-0.2.14-1.src.rpm
-Wrote: /home/mabrown/vcs/atelerix/build/RPMS/noarch/atelerix-0.2.14-1.noarch.rpm
-Executing(%clean): /bin/sh -e /var/tmp/rpm-tmp.1NPLcK
+Checking for unpackaged file(s): /usr/lib/rpm/check-files /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64
+Wrote: /home/mabrown/vcs/atelerix/build/SRPMS/atelerix-0.2.21-1.src.rpm
+Wrote: /home/mabrown/vcs/atelerix/build/RPMS/noarch/atelerix-0.2.21-1.noarch.rpm
+Executing(%clean): /bin/sh -e /var/tmp/rpm-tmp.Uj9tRM
 + umask 022
 + cd /home/mabrown/vcs/atelerix/build//BUILD
-+ cd atelerix-0.2.14
-+ rm -rf /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.14-1.x86_64
++ cd atelerix-0.2.21
++ rm -rf /home/mabrown/vcs/atelerix/build/BUILDROOT/atelerix-0.2.21-1.x86_64
 + rm -rf filelists
 mv --verbose \
     --target-directory ./dist/ \
-    build/atelerix-0.2.14/atelerix.spec \
-    build/atelerix-0.2.14.tar.gz \
+    build/atelerix-0.2.21/atelerix.spec \
+    build/atelerix-0.2.21.tar.gz \
     build/RPMS/*/*.rpm \
-    build/SRPMS/atelerix-0.2.14-1.src.rpm
-‘build/atelerix-0.2.14/atelerix.spec’ -> ‘./dist/atelerix.spec’
-‘build/atelerix-0.2.14.tar.gz’ -> ‘./dist/atelerix-0.2.14.tar.gz’
-‘build/RPMS/noarch/atelerix-0.2.14-1.noarch.rpm’ -> ‘./dist/atelerix-0.2.14-1.noarch.rpm’
-‘build/SRPMS/atelerix-0.2.14-1.src.rpm’ -> ‘./dist/atelerix-0.2.14-1.src.rpm’
-rm -rf atelerix-script main.conf start renserv.cfg   
+    build/SRPMS/atelerix-0.2.21-1.src.rpm
+‘build/atelerix-0.2.21/atelerix.spec’ -> ‘./dist/atelerix.spec’
+‘build/atelerix-0.2.21.tar.gz’ -> ‘./dist/atelerix-0.2.21.tar.gz’
+‘build/RPMS/noarch/atelerix-0.2.21-1.noarch.rpm’ -> ‘./dist/atelerix-0.2.21-1.noarch.rpm’
+‘build/SRPMS/atelerix-0.2.21-1.src.rpm’ -> ‘./dist/atelerix-0.2.21-1.src.rpm’
+rm -rf atelerix-script main.conf   
 rm -f -- substitute.py atelerix.subdata atelerix.spec
-cd .. \
-  && ( test ! -L "atelerix-0.2.14" || rm -f -- "atelerix-0.2.14/.extra-test-build-excludes" "atelerix-0.2.14" )
+( test ! -L "atelerix-0.2.21" || rm -f -- "atelerix-0.2.21/.extra-test-build-excludes" "atelerix-0.2.21" )
 rm -rf -- ./build/ 2>/dev/null || :
 make[1]: Leaving directory '/home/mabrown/vcs/atelerix'
