@@ -573,7 +573,7 @@ help:
 	"  Default behaviour (when no target is specified) is to call the 'build'" \
 	"  target.  This creates the derived files, turning PROGGIE.in into PROGGIE." \
 	"  When you call 'make build', the variables file called '$(SUBDATA)'" \
-	"  is created and then the Makefile.build 'build' target is called." \
+	"  is created and then your Makefile's \"build\" target is called." \
 	"" \
 	"make rpm" \
 	"  Specifying the 'rpm' target will cause the packages to be built into" \
@@ -651,7 +651,7 @@ help:
 	"make tests" \
 	"make docs" \
 	"make some_random_other_thing" \
-	"  These targets are handled in Makefile.build.  If you are using this " \
+	"  You can add any targets you want to your Makefile.  If you are using this " \
 	"  and you happen not have rpm available, you might stick a dummy script " \
 	"  named 'rpm' somewhere it will be found so that you can still 'make tests'" \
 	"  or 'make docs'." \
