@@ -435,9 +435,13 @@ obs: srpm obs-project obs-new obs-update obs-removeold obs-extractsrpm obs-addre
 #      The Synonym Courtyard: convenience targets for less typing           #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
-.PHONY: test-rpm testrpm rpm-test rpmtest
-test-rpm testrpm rpm-test rpmtest:
+.PHONY: testrpm test-rpm rpm-test rpmtest
+testrpm test-rpm rpm-test rpmtest:
 	$(MAKE) rpm SCM_TYPE=test
+
+.PHONY: rpmdist rpm-dist distrpm 
+rpmdist rpm-dist distrpm:
+	$(MAKE) buildrpm RPMDIST=
 
 .PHONY: test-obs testobs obstest obs-test
 test-obs testobs obstest obs-test:
@@ -586,14 +590,15 @@ help:
 	"  directory." \
 	"" \
 	"make rpmdist" \
-	"  If you have a build environment configured, you can specify the 'rpmdist'" \
-	"  target and the environment-specified .rpmmacros will be honored, leaving" \
-	"  the resulting packages in the environment configured RPM tree," \
-	"  thus allowing you to build directly into an existing RPM-MD repository." \
-	"  Useful if you already have a build environment you wish to use." \
-	"  Supported, but (possibly) superfluous target, see instead 'obs' target." \
+	"  Allow RPM to build into the user's preferred environment, instead of" \
+	"  creating ./build/ and ./dist/ in current worknig directory.  I.e. the" \
+        "  ~/.rpmmacros will be honored.  The resulting packages will land in the" \
+        "  user's configured RPM tree, thus allowing you to build directly into an" \
+        "  existing RPM-MD repository." \
 	"" \
 	"make testrpm" \
+	"make rpm SCM_TYPE=test" \
+	"make test-rpm" \
 	"  This builds the package straight out of the current working directory." \
 	"  That allows you to test that the package builds cleanly before checking" \
 	"  in any code.  This target creates a tarball from your working directory." \
@@ -601,22 +606,18 @@ help:
 	"  create a file called '$(EXPORT_EXCL)' which should list the" \
         "  files to add to the --exclude params for the tar command." \
 	"" \
-	"make rpm SCM_TYPE=test" \
-	"make test-rpm" \
-	"  These are synonyms for 'make testrpm'" \
-	"" \
 	"make branch" \
-	"  The result is that you have captured a snapshot of the current release" \
-	"  of the software in subversion, and it can be rebuilt from that branch." \
-	"  You can then continue developing against ./trunk/ or your new branch." \
+	"  Branch from \"here\"; just a convenience, that creates a $(SCM_TYPE) branch." \
 	"  By default a branch for this package would be $(BRANCHNAME)." \
 	"  You can override the default branch name with a variable, for example:" \
  	"" \
 	"    'make branch BRANCHNAME=hairy_ogre-0.7.5'" \
  	"" \
+ 	"  (Though your native VCS tools probably offer finer control.)" \
+ 	"" \
 	"make tag" \
 	"  After you have checked that your package builds, using 'make testrpm'," \
-	"  and you have adjusted the version number in specfile.in and committed" \
+	"  and you have increased the version number in specfile.in and committed" \
 	"  that specfile.in, you can take advantage of the 'make tag' feature." \
 	"  When you call 'make tag', the Makefile runs a few sanity checks and" \
 	"  then creates a tag for the current version of the package." \
@@ -627,11 +628,10 @@ help:
 	"  which SCM_TYPE you would like to use for the build of this package by" \
 	"  setting the SCM_TYPE package type on the command line." \
 	"" \
-	"make rpm SCM_TYPE=git" \
-	"make rpm SCM_TYPE=git GIT_ID=HEAD" \
-	"  If you live in the future, you may already be using 'git' (or 'git-svn')" \
-	"  and, therefore, can use GIT_IDs to build packages straight out of your" \
-	"  cloned git repo." \
+	"make rpm" \
+	"make rpm GIT_ID=ed49442" \
+	"  You can specify a GIT_ID (tag or tree-ish) to specify the location in" \
+        "  the git tree you want to checkout and build from. (Buggy, 2015-07-23.)" \
 	"" \
 	"make obs" \
 	"  Atelerix can push to the Open Build Service software to manage software" \
@@ -639,23 +639,19 @@ help:
 	"  straight from the version control system and upload the result into" \
 	"  the specified OBS project (default is $(OBSPROJECT))." \
 	"" \
-	"  N.B. For the OBS targets, it is required that the user have already" \
-	"  configured a $(OSCRC) and a working 'osc' CLI access to the build" \
+	"  For all OBS targets, it is required that the user have already" \
+	"  configured an $(OSCRC) and a working 'osc' CLI access to the build" \
 	"  service instance." \
- 	"" \
-	"make obsdev    # (also 'obs-dev')" \
-	"  A few convenience targets for sending packages to internal " \
-	"  infrastructure. This target will build in the OBS project 'dev:internal'." \
  	"" \
 	"make testobs" \
 	"  This is shorthand for 'make obs SCM_TYPE=test', which builds the" \
 	"  current working directory as a package and then uploads that result" \
-	"  into the specified OBS project." \
+	"  into the specified OBS project (default is $(OBSPROJECT))." \
  	"" \
 	"Make Variables:" \
 	"  SCM_TYPE:    source control manager, default here is '$(SCM_TYPE)'" \
 	"  GIT_ID:      a git hash ID, refers to tag/branch, default is '$(GIT_ID)'" \
-	"  OBSUSER:     username for new OBS packages, default from ~/.oscrc" \
+	"  OBSUSER:     OBS maintainer, from $(OSCRC), default is $(OBSUSER)" \
 	"  OBSPROJECT:  project for this package, defaults to '$(OBSPROJECT)'" \
  	"" \
 	"make build" \
