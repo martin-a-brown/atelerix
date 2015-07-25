@@ -3,6 +3,7 @@ TODO
   * create testing tools to make sure there's no future retrogression
   * build a set of illustrative sample packages demonstrating sub-packages 
     and other nifty features.
+  * add targets 'bumpversion' and 'newpackage' or, maybe, 'skeleton'
 
 DONE
 -------
