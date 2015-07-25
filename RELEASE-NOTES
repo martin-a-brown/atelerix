@@ -1,4 +1,18 @@
 
+atelerix-0.3.0, 2015-07-23:
+
+  * first version that inverts the inclusion order; instead of having
+    a Makefile (atelerix) import the user's Makefile.build, allow the
+    user to 'include atelerix'
+  * accept patch from Philip Ramsey (rootcanal) for variables SYSTEMD
+    and SYSCONFIG
+  * many documentation fixes
+  * fix issue with Makefile messing with parent directory of working
+    directory, addressing long-standing request from Jon Nelson
+  * improve the git support; set the default GIT_ID to HEAD, to behave
+    as many would expect; add target 'git-tag'
+  * improve README and update sample-build.txt file
+
 2015-07-16: agglomerated patches all incorporated along with improved
   documentation and the following major features:
     * almost complete elimination of recursive calls to make
